@@ -1,0 +1,13 @@
+use_frameworks!
+
+platform :ios, '10.0'
+
+target 'MYDearBusiness_Example' do
+  pod 'MYDearBusiness', :path => '../'
+
+  target 'MYDearBusiness_Tests' do
+    inherit! :search_paths
+
+    pod 'FBSnapshotTestCase'
+  end
+end

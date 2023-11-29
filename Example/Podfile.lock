@@ -1,0 +1,27 @@
+PODS:
+  - FBSnapshotTestCase (2.1.4):
+    - FBSnapshotTestCase/SwiftSupport (= 2.1.4)
+  - FBSnapshotTestCase/Core (2.1.4)
+  - FBSnapshotTestCase/SwiftSupport (2.1.4):
+    - FBSnapshotTestCase/Core
+  - MYDearBusiness (0.1.0)
+
+DEPENDENCIES:
+  - FBSnapshotTestCase
+  - MYDearBusiness (from `../`)
+
+SPEC REPOS:
+  trunk:
+    - FBSnapshotTestCase
+
+EXTERNAL SOURCES:
+  MYDearBusiness:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  FBSnapshotTestCase: 094f9f314decbabe373b87cc339bea235a63e07a
+  MYDearBusiness: a52dfedb255527ad39219b3bd0ebfc3a1a821a4f
+
+PODFILE CHECKSUM: 3c1c2ea28e4867153168e9ba1837fab3ec85cfac
+
+COCOAPODS: 1.14.3
