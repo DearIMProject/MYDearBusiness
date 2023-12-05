@@ -32,6 +32,8 @@ FOUNDATION_EXPORT NSString *const CHAT_CONNECT_FAILURE;
 
 - (void)chatManager:(MYChatManager *)manager onReceiveOfflineManager:(NSArray<MYMessage *> *)messages;
 
+- (void)chatManagerIsDisConnect:(MYChatManager *)manager;
+
 @end
 
 

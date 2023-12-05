@@ -9,12 +9,14 @@
 #import "MYLoginService.h"
 #import "MYProfileItemViewModel.h"
 #import <MYRouter/MYRouter.h>
-
+#import "MYIconProfileViewModel.h"
 @interface MYProfileDataSource ()
 
 @property (nonatomic, strong) MYLoginService *loginService;
 
 @property (nonatomic, strong) MYSectionModel *profileSectionModel;
+
+@property (nonatomic, strong) MYIconProfileViewModel *profileVM;
 
 @property (nonatomic, strong) MYProfileItemViewModel *logoutViewModel;
 
@@ -33,6 +35,9 @@
         self.sectionModels = @[self.profileSectionModel];
         _logoutViewModel = [[MYProfileItemViewModel alloc] init];
         _logoutViewModel.title = @"logout".local;
+        
+        _profileVM = [[MYIconProfileViewModel alloc] init];
+        
 #if DEBUG
         _testViewModel = [[MYProfileItemViewModel alloc] init];
         _testViewModel.title = @"test".local;
@@ -49,9 +54,9 @@
         };
         
 #if DEBUG
-        _profileSectionModel.viewModels = @[self.testViewModel, self.logoutViewModel];
+        _profileSectionModel.viewModels = @[self.profileVM,self.testViewModel, self.logoutViewModel];
 #else
-        _profileSectionModel.viewModels = @[self.logoutViewModel];
+        _profileSectionModel.viewModels = @[self.profileVM,self.logoutViewModel];
 #endif
         
     }
@@ -82,6 +87,7 @@
 }
 
 - (void)request {
+    [self.profileVM convertFromUser:TheUserManager.user];
     if (self.successBlock) {
         self.successBlock();
     }

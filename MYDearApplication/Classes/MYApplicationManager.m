@@ -17,6 +17,8 @@
 
 #import <MYDearHome/MYHomeTabbarViewController.h>
 
+#import <UserNotifications/UserNotifications.h>
+#import "MYApplicationNotificationManager.h"
 @interface MYApplicationManager ()
 
 @property(nonatomic, strong) MYNavigationViewController *naviController;
@@ -39,8 +41,19 @@
         [IQKeyboardManager sharedManager].enableAutoToolbar = NO;
         [IQKeyboardManager sharedManager].shouldResignOnTouchOutside = YES;
         [theChatManager initChat];
+        [self setupLogger];
     }
     return self;
+}
+
+- (void)setupLogger {
+    [DDLog addLogger:[DDASLLogger sharedInstance] withLevel:DDLogLevelAll];
+    [DDLog addLogger:[DDTTYLogger sharedInstance] withLevel:DDLogLevelAll];
+    [[DDTTYLogger sharedInstance] setColorsEnabled:YES];
+    DDFileLogger *fileLogger = [[DDFileLogger alloc] init];
+    fileLogger.rollingFrequency = 60 * 60 * 24; // 24 hour rolling
+    fileLogger.logFileManager.maximumNumberOfLogFiles = 7;
+    [DDLog addLogger:fileLogger];
 }
 
 - (void)refreshRootViewController {
@@ -49,11 +62,11 @@
 }
 
 - (UIViewController *)rootViewController {
-//    #if DEBUG
-//        ViewController *tabbar = [[ViewController alloc] init];
-//        UINavigationController *testnavi = [[UINavigationController alloc] initWithRootViewController:tabbar];
-//        return testnavi;
-//    #endif
+    //    #if DEBUG
+    //        ViewController *tabbar = [[ViewController alloc] init];
+    //        UINavigationController *testnavi = [[UINavigationController alloc] initWithRootViewController:tabbar];
+    //        return testnavi;
+    //    #endif
     if ([MYUserManager.shared isLogin] && !MYUserManager.shared.isExpireTime) {
         MYHomeTabbarViewController *tabBar = [[MYHomeTabbarViewController alloc] init];
         MYNavigationViewController *navi = [[MYNavigationViewController alloc] initWithRootViewController:tabBar];
@@ -62,7 +75,8 @@
     }
     
     MYNavigationViewController *navi =
-            [[MYNavigationViewController alloc] initWithRootViewController:MYLoginViewController.new];
+    [[MYNavigationViewController alloc] initWithRootViewController:MYLoginViewController.new];
+    navi.backColor = TheSkin.themeColor;
     self.naviController = navi;
     return navi;
 }
@@ -74,18 +88,19 @@
 #pragma mark - appdelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    [MYApplicationNotificationManager.shared setup];
+    
     //用户自动登录
     @weakify(self);
     [TheUserManager checkAutoLoginWithSuccess:^{
-//        [MBProgressHUD showSuccess:@"login_success".local toView:self.mainWindow];
+        //        [MBProgressHUD showSuccess:@"login_success".local toView:self.mainWindow];
     }                                 failure:^(NSError *_Nonnull error) {
         @strongify(self);
-//        [MBProgressHUD showError:error.description toView:self.mainWindow];
         self.mainWindow.rootViewController = self.rootViewController;
         [self.mainWindow makeKeyAndVisible];
     }];
-
-    NSString *apiAddress = @"172.16.92.113";
+    
+    NSString *apiAddress = @"172.16.92.107";
     theNetworkManager.host = apiAddress;
     TheSocket.host = apiAddress;
     return YES;

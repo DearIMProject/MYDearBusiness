@@ -15,6 +15,8 @@
 @interface MYChatPersonDataSource ()
 
 @property (nonatomic, strong) MYSectionModel *sectionModel;
+@property (nonatomic, strong) NSMutableDictionary<NSNumber *,MYChatPersonViewModel *> *chatMap;
+@property (nonatomic, strong) NSMutableArray<MYChatPersonViewModel *> *chatPersonVMs;
 
 @end
 
@@ -24,20 +26,36 @@
     if(self = [super init]) {
         _sectionModel = [[MYSectionModel alloc] init];
         self.sectionModels = @[self.sectionModel];
+        _chatMap = [NSMutableDictionary dictionary];
+        _chatPersonVMs = [NSMutableArray array];
+        self.sectionModel.viewModels = self.chatPersonVMs;
     }
     return self;
 }
 
 - (void)request {
-    NSMutableArray *array = [NSMutableArray array];
     long userId = TheUserManager.user.userId;
     NSArray<MYDBUser *> *chatPersons = [theDatabase getAllChatPersonWithUserId:userId];
     for (MYDBUser *chatPerson in chatPersons) {
         MYChatPersonViewModel *vm = [[MYChatPersonViewModel alloc] init];
+        self.chatMap[@(vm.userId)] = vm;
         [vm convertFromDBModel:chatPerson];
-        [array addObject:vm];
+        [self.chatPersonVMs addObject:vm];
     }
-    self.sectionModel.viewModels = array;
+
+    if (self.successBlock) self.successBlock();
+}
+
+- (void)addMessage:(MYMessage *)message fromUser:(MYUser *)user {
+    MYChatPersonViewModel *vm = self.chatMap[@(user.userId)];
+    if (!vm) {
+        vm = [[MYChatPersonViewModel alloc] init];
+        [vm converFromUser:user];
+        vm.msgContent = message.content;
+        [self.chatPersonVMs insertObject:vm atIndex:0];
+        self.chatMap[@(vm.userId)] = vm;
+    }
+    vm.messageNumber++;
     if (self.successBlock) self.successBlock();
 }
 

@@ -7,17 +7,24 @@
 
 #import "MYChatPersonListViewController.h"
 #import <MJRefresh/MJRefresh.h>
+#import <MYDearBusiness/MYDearBusiness.h>
 #import "MYChatPersonDataSource.h"
 
-@interface MYChatPersonListViewController ()
+@interface MYChatPersonListViewController () <MYChatManagerDelegate>
 
 @property (nonatomic, strong) MYChatPersonDataSource *dataSources;
+@property (nonatomic, assign) NSInteger chatNumber;/**< 左下角数字  */
 
 @end
 
 @implementation MYChatPersonListViewController
 
 #pragma mark - dealloc
+
+- (void)dealloc {
+    [theChatManager removeChatDelegate:self];
+}
+
 #pragma mark - life cycle
 
 - (instancetype)init {
@@ -37,6 +44,8 @@
 }
 
 - (void)initData {
+    [theChatManager addChatDelegate:self];
+    
     @weakify(self);
     [MBProgressHUD showLoadingToView:self.view];
     self.dataSources.successBlock = ^{
@@ -65,7 +74,14 @@
 }
 
 #pragma mark - UITableViewDelegate
-#pragma mark - CustomDelegate
+#pragma mark - MYChatManagerDelegate
+
+- (void)chatManager:(MYChatManager *)manager didReceiveMessage:(MYMessage *)message fromUser:(MYUser *)user {
+    // 加1
+    self.chatNumber++;
+    self.tabBarItem.badgeValue = [NSString stringWithFormat:@"%d",self.chatNumber];
+    [self.dataSources addMessage:message fromUser:user];
+}
 #pragma mark - Event Response
 #pragma mark - private methods
 #pragma mark - getters & setters & init members

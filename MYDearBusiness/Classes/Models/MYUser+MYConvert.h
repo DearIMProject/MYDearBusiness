@@ -16,4 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+@interface MYDBUser (MYConvert)
+
++ (instancetype)convertFromUser:(MYUser *)user;
+
+@end
+
 NS_ASSUME_NONNULL_END

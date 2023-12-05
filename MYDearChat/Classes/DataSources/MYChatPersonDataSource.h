@@ -6,10 +6,14 @@
 //
 
 #import "MYDataSource.h"
+#import <MYNetwork/MYNetwork.h>
+#import <MYDearUser/MYDearUser.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface MYChatPersonDataSource : MYDataSource
+
+- (void)addMessage:(MYMessage *)message fromUser:(MYUser *)user;
 
 @end
 

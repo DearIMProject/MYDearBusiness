@@ -6,6 +6,7 @@
 //
 
 #import "MYAddressListDatasource.h"
+#import <MYDearBusiness/MYDearBusiness.h>
 #import "MYAddressViewModel.h"
 #import "MYAddressService.h"
 #import "MYAddressViewModel.h"
@@ -35,16 +36,18 @@
 
 - (void)request {
     @weakify(self);
-    [self.viewModels removeAllObjects];
     [self.service getAllAddressListWithSuccess:^(NSArray<MYUser *> * _Nonnull users) {
         @strongify(self);
+        [self.viewModels removeAllObjects];
         for (MYUser *user in users) {
             MYAddressViewModel *vm = [[MYAddressViewModel alloc] init];
             [vm converFromUser:user];
             [self.viewModels addObject:vm];
         }
-        
+        //TODO: wmy 保存到本地
         if (self.successBlock) self.successBlock();
+        
+        
     } failure:self.failureBlock];
 }
 

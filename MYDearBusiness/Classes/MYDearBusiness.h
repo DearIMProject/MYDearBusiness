@@ -12,6 +12,7 @@
 #import "MYChatManager.h"
 #import "MYRequest.h"
 #import "MYMessageFactory.h"
-
+#import "MYMessage+MYConvert.h"
+#import "MYUser+MYConvert.h"
 
 #endif /* MYDearBusiness_h */

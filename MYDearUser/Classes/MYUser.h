@@ -19,9 +19,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSString *icon;/**< 头像  */ 
 @property (nonatomic, assign) long expireTime;
 @property (nonatomic, assign) BOOL vipStatus;
+@property (nonatomic, assign) BOOL status;/** 用户状态*/
+@property (nonatomic, assign) BOOL isInChat;/**< 是否在聊天窗口  */
 @property (nonatomic, assign) NSTimeInterval vipExpired;
 
 - (BOOL)isVip;
+
 @end
 
 NS_ASSUME_NONNULL_END

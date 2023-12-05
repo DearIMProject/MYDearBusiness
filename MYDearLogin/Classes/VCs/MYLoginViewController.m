@@ -36,6 +36,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.navigationController.navigationBar.backIndicatorImage = [UIImage new];
     self.view.backgroundColor = TheSkin.themeColor;
     [self.view addSubview:self.titleLabel];
     [self.view addSubview:self.emailTextField];
@@ -84,7 +86,9 @@
     
     //TODO: wmy
 #if DEBUG
-    self.emailTextField.text = @"305662816@qq.com";
+    self.emailTextField.text = @"iphonex@apple.com";// iphonex
+//    self.emailTextField.text = @"305662816@qq.com";// iphonexs
+//    self.emailTextField.text = @"simulator@apple.com";// 模拟器
     self.pwdTextField.text = @"apple";
 #endif
 }

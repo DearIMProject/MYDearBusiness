@@ -79,6 +79,10 @@ NSString *kUserDataName = @"userData";
     self.user = nil;
 }
 
+- (long long)uid {
+    return self.user.userId;
+}
+
 - (void)setUser:(MYUser *)user {
     _user = user;
     if (user == nil) {

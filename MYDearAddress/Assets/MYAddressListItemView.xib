@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="MYAddressListItemView">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="56"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="b7Q-iq-xkj">
+                    <rect key="frame" x="56" y="55" width="337" height="1"/>
+                    <color key="backgroundColor" red="0.89803921568627454" green="0.89803921568627454" blue="0.89803921568627454" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="1" id="2jd-wP-gR6"/>
+                    </constraints>
+                </view>
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="iD3-px-K73">
+                    <rect key="frame" x="16" y="8" width="40" height="40"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="40" id="2c3-Z6-dTE"/>
+                        <constraint firstAttribute="height" constant="40" id="afB-x2-Z5B"/>
+                    </constraints>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                            <integer key="value" value="5"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                </imageView>
+                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="JS9-FQ-Dcm">
+                    <rect key="frame" x="68" y="18" width="52" height="20.333333333333329"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="用户名" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="30y-Xh-sLi">
+                            <rect key="frame" x="0.0" y="0.0" width="52" height="20.333333333333332"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                </stackView>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="iD3-px-K73" secondAttribute="bottom" constant="8" id="59B-mJ-bR8"/>
+                <constraint firstItem="JS9-FQ-Dcm" firstAttribute="leading" secondItem="iD3-px-K73" secondAttribute="trailing" constant="12" id="7jY-uY-b7i"/>
+                <constraint firstItem="b7Q-iq-xkj" firstAttribute="leading" secondItem="iD3-px-K73" secondAttribute="trailing" id="BzZ-b4-pcR"/>
+                <constraint firstItem="iD3-px-K73" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="8" id="Df8-Sa-PYY"/>
+                <constraint firstAttribute="trailing" secondItem="b7Q-iq-xkj" secondAttribute="trailing" id="GeJ-zG-QQe"/>
+                <constraint firstItem="iD3-px-K73" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="16" id="M3C-dO-5fh"/>
+                <constraint firstItem="iD3-px-K73" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="ZIr-tX-x0E"/>
+                <constraint firstAttribute="bottom" secondItem="b7Q-iq-xkj" secondAttribute="bottom" id="gnJ-w2-w5c"/>
+                <constraint firstItem="JS9-FQ-Dcm" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="t8n-ha-e7Z"/>
+            </constraints>
+            <nil key="simulatedTopBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="iconImageView" destination="iD3-px-K73" id="oLl-Md-sWq"/>
+                <outlet property="nameLabel" destination="30y-Xh-sLi" id="H20-o0-avf"/>
+            </connections>
+            <point key="canvasLocation" x="9.9236641221374047" y="-46.478873239436624"/>
+        </view>
+    </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

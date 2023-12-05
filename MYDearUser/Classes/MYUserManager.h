@@ -36,7 +36,7 @@ FOUNDATION_EXPORT NSString *const LOGOUT_NOTIFICATION;
 ///   - failure: 登录失败
 - (void)checkAutoLoginWithSuccess:(void(^)(void))success failure:(void(^)(NSError *error))failure;
 
-
+- (long long)uid;
 
 @end
 

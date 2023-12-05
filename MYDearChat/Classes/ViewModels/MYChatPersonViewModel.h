@@ -18,9 +18,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) long long userId;
 
+@property (nonatomic, assign) int messageNumber;/**< 消息数  */ 
+
 @property (nonatomic, strong) MYUser *model;/**< model  */
 
 - (void)convertFromDBModel:(MYDBUser *)model;
+
+- (void)converFromUser:(MYUser *)user;
 
 @end
 

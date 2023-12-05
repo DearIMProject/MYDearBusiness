@@ -1,3 +1,4 @@
+
 //
 //  MYTestChatViewController.m
 //  DearIMProject
@@ -31,6 +32,7 @@ __MY_ROUTER_REGISTER__
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     self.title = @"测试消息的发送和接收";
     [TheSocket addDelegate:self];
 }

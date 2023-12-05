@@ -16,7 +16,7 @@
 }
 
 - (CGSize)itemSize {
-    return CGSizeMake(0, 64);
+    return CGSizeMake(0, 72);
 }
 - (void)convertFromDBModel:(MYDBUser *)chatPerson {
     //TODO: wmy 将chatPerson 转为user
