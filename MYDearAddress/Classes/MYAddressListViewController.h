@@ -6,10 +6,13 @@
 //
 
 #import <MYMVVM/MYMVVM.h>
+#import <MYDearBusiness/MYDearBusiness.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MYAddressListViewController : MYTableViewController
+@interface MYAddressListViewController : MYTableViewController <MYHomeTabViewControllerProtocol>
+
+@property (nonatomic, strong) MYInteractor *interactor;
 
 @end
 

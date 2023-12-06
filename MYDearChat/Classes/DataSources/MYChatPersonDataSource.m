@@ -9,7 +9,7 @@
 
 #import "MYChatPersonDataSource.h"
 #import "MYChatPersonViewModel.h"
-#import <MYClientDatabase/MYClientDatabase.h>
+#import <MYDearBusiness/MYDearBusiness.h>
 #import "MYUserManager.h"
 
 @interface MYChatPersonDataSource ()
@@ -35,7 +35,7 @@
 
 - (void)request {
     long userId = TheUserManager.user.userId;
-    NSArray<MYDBUser *> *chatPersons = [theDatabase getAllChatPersonWithUserId:userId];
+    NSArray<MYDBUser *> *chatPersons = [theDatabase getChatListWithUserId:userId];
     for (MYDBUser *chatPerson in chatPersons) {
         MYChatPersonViewModel *vm = [[MYChatPersonViewModel alloc] init];
         self.chatMap[@(vm.userId)] = vm;
@@ -55,8 +55,28 @@
         [self.chatPersonVMs insertObject:vm atIndex:0];
         self.chatMap[@(vm.userId)] = vm;
     }
-    vm.messageNumber++;
+    if (message) {
+        // 添加message到数据库中
+        MYDataMessage *dbMessage = [MYMessage convertFromMessage:message];
+        [theDatabase addChatMessage:dbMessage fromUserId:user.userId belongToUserId:TheUserManager.uid];
+        vm.messageNumber++;
+    }
     if (self.successBlock) self.successBlock();
+}
+
+- (void)setInteractor:(MYInteractor *)interactor {
+    _interactor = interactor;
+    [interactor registerTarget:self action:@selector(onReceiveAddChatPerson:) forEventName:kClickAddressItemEventName];
+}
+
+- (void)onReceiveAddChatPerson:(MYUser *)user {
+    MYChatPersonViewModel *vm = self.chatMap[@(user.userId)];
+    if (!vm) {
+        MYDBUser *dbUser = [MYDBUser convertFromUser:user];
+        [theDatabase setUserInChat:dbUser withOwnerUserId:TheUserManager.uid];
+    }
+    
+    [self addMessage:nil fromUser:user];
 }
 
 @end

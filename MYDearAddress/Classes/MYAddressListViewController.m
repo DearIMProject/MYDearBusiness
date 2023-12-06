@@ -22,7 +22,6 @@
         self.title = @"addressbook".local;
         self.tabBarItem.image = [UIImage systemImageNamed:@"book"];
         self.tabBarItem.selectedImage = [UIImage systemImageNamed:@"book.fill"];
-        _datasource = [[MYAddressListDatasource alloc] init];
     }
     return self;
 }
@@ -34,6 +33,8 @@
 }
 
 - (void)initData {
+    self.tableViewDelegate.interactor = self.interactor;
+    self.datasource.interactor = self.interactor;
     @weakify(self);
     self.datasource.successBlock = ^{
         @strongify(self);
@@ -58,6 +59,13 @@
         @strongify(self);
         [self.datasource request];
     }];
+}
+
+- (MYAddressListDatasource *)datasource {
+    if (!_datasource) {
+        _datasource = [[MYAddressListDatasource alloc] init];
+    }
+    return _datasource;
 }
 
 @end

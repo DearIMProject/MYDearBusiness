@@ -17,6 +17,9 @@
 @property(nonatomic, strong) MYChatMessageViewModel *viewModel;
 @property (nonatomic, strong) UIImageView *meIconImageView;/**<  自己头像 */
 @property(nonatomic, strong) UIStackView *stackView;
+
+@property (nonatomic, strong) UIProgressView *progressView;
+
 @end
 
 @implementation MYChatMeMessageItemView
@@ -65,6 +68,7 @@
     self.contentLabel.textColor = kWhiteColor;
     self.meIconImageView.hidden = NO;
     
+    self.progressView.hidden = (viewModel.sendSuccessStatus != MYMessageStatus_loading);
 }
 
 #pragma mark - private methods
@@ -74,6 +78,7 @@
     if (!_stackView) {
         _stackView = [[UIStackView alloc] init];
         [_stackView addArrangedSubview:UIView.new];
+        [_stackView addArrangedSubview:self.progressView];
         [_stackView addArrangedSubview:self.contentView];
         [_stackView addArrangedSubview:self.meIconImageView];
         _stackView.axis = UILayoutConstraintAxisHorizontal;
@@ -100,7 +105,6 @@
     return _contentLabel;
 }
 
-
 - (UIView *)contentView {
     if (!_contentView) {
         _contentView = [[UIView alloc] init];
@@ -123,4 +127,12 @@
     }
     return _meIconImageView;
 }
+
+- (UIProgressView *)progressView {
+    if (!_progressView) {
+        _progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
+    }
+    return _progressView;
+}
+
 @end

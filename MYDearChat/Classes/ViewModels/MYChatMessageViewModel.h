@@ -7,12 +7,18 @@
 
 #import <MYMVVM/MYMVVM.h>
 #import <MYClientDatabase/MYClientDatabase.h>
+#import <MYNetwork/MYNetwork.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface MYChatMessageViewModel : MYViewModel
 
 @property(nonatomic, strong) NSString *content;/**<  消息内容 */
+@property (nonatomic, assign, readonly) NSTimeInterval tag;
+
+@property (nonatomic, strong) MYMessage *model;
+
+@property (nonatomic, assign, readonly) MYMessageStatus sendSuccessStatus;
 /**
  * 用户图片
  */
@@ -20,7 +26,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)convertWithDataModel:(MYDataMessage *)dbModel;
 
+- (void)convertWithMessage:(MYMessage *)message;
+
 - (BOOL)isBelongMe;
+
+- (void)setMsgSendSuccess;
 
 @end
 

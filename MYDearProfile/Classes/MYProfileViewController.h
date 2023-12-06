@@ -6,10 +6,13 @@
 //
 
 #import "MYTableViewController.h"
+#import <MYDearBusiness/MYDearBusiness.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MYProfileViewController : MYTableViewController
+@interface MYProfileViewController : MYTableViewController <MYHomeTabViewControllerProtocol>
+
+@property (nonatomic, strong) MYInteractor *interactor;
 
 @end
 

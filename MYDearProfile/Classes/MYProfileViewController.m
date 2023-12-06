@@ -21,6 +21,8 @@
     [super viewDidLoad];
     self.title = @"profile".local;
     self.tableViewDelegate.dataSource = self.dataSource;
+    self.tableViewDelegate.interactor = self.interactor;
+    self.dataSource.interactor = self.interactor;
     @weakify(self);
     self.dataSource.successBlock = ^{
         @strongify(self);

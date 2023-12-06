@@ -34,7 +34,7 @@
 }
 
 - (void)request {
-    NSArray<MYDataMessage *> *dataMessages = [theDatabase getChatMessageWithPerson:self.viewModel.userId];
+    NSArray<MYDataMessage *> *dataMessages = [theDatabase getChatMessageWithPerson:self.viewModel.userId belongToUserId:TheUserManager.uid];
     for (MYDataMessage *dataMessage in dataMessages) {
         MYChatMessageViewModel *vm = [[MYChatMessageViewModel alloc] init];
         [vm convertWithDataModel:dataMessage];
@@ -46,8 +46,10 @@
 }
 
 - (void)addChatMessage:(MYMessage *)message byUser:(MYUser *)user {
+    // message添加到数据库中
     MYDataMessage *dbMessage = [MYMessage convertFromMessage:message];
-    [theDatabase addChatMessage:dbMessage];
+    [theDatabase addChatMessage:dbMessage fromUserId:user.userId belongToUserId:TheUserManager.uid];
+    // ui交互
     MYChatMessageViewModel *vm = [[MYChatMessageViewModel alloc] init];
     [vm convertWithDataModel:dbMessage];
     [self.vms addObject:vm];
@@ -55,4 +57,17 @@
         self.successBlock();
     }
 }
+
+- (void)successMessageWithTag:(NSTimeInterval)tag {
+    NSEnumerator *reverseEnumerator = [self.vms reverseObjectEnumerator];
+    MYChatMessageViewModel *vm;
+    while (vm = [reverseEnumerator nextObject]) {
+        if (vm.tag == tag) {
+            [vm setMsgSendSuccess];
+            //TODO: wmy 调用数据库代码
+            break;
+        }
+    }
+}
+
 @end

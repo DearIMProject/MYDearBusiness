@@ -23,6 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property(nonatomic, weak) id<MYProfileDataSourceDelegate> delegate;
 
+@property (nonatomic, strong) MYInteractor *interactor; /**< 交互层  */
+
 
 @end
 

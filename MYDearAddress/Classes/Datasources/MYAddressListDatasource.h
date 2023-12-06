@@ -11,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MYAddressListDatasource : MYDataSource
 
+@property (nonatomic, strong) MYInteractor *interactor; /**< 交互层  */
+
 @end
 
 NS_ASSUME_NONNULL_END

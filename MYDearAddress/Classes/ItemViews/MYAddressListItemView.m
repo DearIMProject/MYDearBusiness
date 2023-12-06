@@ -6,8 +6,7 @@
 //
 
 #import "MYAddressListItemView.h"
-#import <MYRouter/MYRouter.h>
-#import <SDWebImage/SDWebImage.h>
+#import <MYDearBusiness/MYDearBusiness.h>
 #import "MYAddressViewModel.h"
 
 @interface MYAddressListItemView ()
@@ -25,37 +24,6 @@
 
 #pragma mark - dealloc
 #pragma mark - life cycle
-
-//- (instancetype)init {
-//    self = [super init];
-//    if (self) {
-//        [self initView];
-//    }
-//    return self;
-//}
-//
-//- (instancetype)initWithFrame:(CGRect)frame {
-//    if (self = [super initWithFrame:frame]) {
-//        [self initView];
-//    }
-//    return self;
-//}
-
-//- (void)initView {
-//    [self addSubview:self.stackView];
-//    [self addSubview:self.iconImageView];
-//    [self.iconImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.width.height.mas_equalTo(kIconWidth);
-//        make.centerY.equalTo(self);
-//        make.left.mas_equalTo(kMargin);
-//    }];
-//    [self.stackView mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.left.equalTo(self.iconImageView.mas_right).offset(kSpace);
-//        make.right.mas_lessThanOrEqualTo(self).offset(-kMargin);
-//        make.centerY.equalTo(self);
-//    }];
-//
-//}
 
 + (instancetype)itemView {
     return [self itemViewWithBundleName:@"MYDearAddress"];
@@ -75,6 +43,7 @@
 }
 
 - (void)onSelected {
+    [self.interactor sendEventName:kClickAddressItemEventName withObjects:self.viewModel.model];
     NSMutableDictionary *dict = @{}.mutableCopy;
     dict[@"viewModel"] = self.viewModel;
     [MYRouter routerURL:@"dearim://messagelist" withParameters:dict];

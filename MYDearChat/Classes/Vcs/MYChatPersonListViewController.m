@@ -44,6 +44,9 @@
 }
 
 - (void)initData {
+    self.tableViewDelegate.interactor = self.interactor;
+    self.dataSources.interactor = self.interactor;
+    
     [theChatManager addChatDelegate:self];
     
     @weakify(self);

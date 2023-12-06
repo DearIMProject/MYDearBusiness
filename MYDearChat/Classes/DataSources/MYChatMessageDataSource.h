@@ -19,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)addChatMessage:(MYMessage *)message byUser:(MYUser *)user;
 
+- (void)successMessageWithTag:(NSTimeInterval)tag;
+
 @end
 
 NS_ASSUME_NONNULL_END

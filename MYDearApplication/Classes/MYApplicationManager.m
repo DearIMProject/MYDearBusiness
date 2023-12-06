@@ -89,20 +89,20 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [MYApplicationNotificationManager.shared setup];
-    
-    //用户自动登录
-    @weakify(self);
-    [TheUserManager checkAutoLoginWithSuccess:^{
-        //        [MBProgressHUD showSuccess:@"login_success".local toView:self.mainWindow];
-    }                                 failure:^(NSError *_Nonnull error) {
-        @strongify(self);
-        self.mainWindow.rootViewController = self.rootViewController;
-        [self.mainWindow makeKeyAndVisible];
-    }];
-    
     NSString *apiAddress = @"172.16.92.107";
     theNetworkManager.host = apiAddress;
     TheSocket.host = apiAddress;
+    
+    //用户自动登录
+    if (TheUserManager.user.token) {
+        @weakify(self);
+        [TheUserManager checkAutoLoginWithSuccess:^{
+            //        [MBProgressHUD showSuccess:@"login_success".local toView:self.mainWindow];
+        }                                 failure:^(NSError *_Nonnull error) {
+            @strongify(self);
+            [self refreshRootViewController];
+        }];
+    }
     return YES;
 }
 

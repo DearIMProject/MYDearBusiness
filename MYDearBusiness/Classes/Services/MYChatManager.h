@@ -43,7 +43,7 @@ FOUNDATION_EXPORT NSString *const CHAT_CONNECT_FAILURE;
 
 - (void)initChat;
 
-- (void)sendContext:(nullable NSString  *)content toUser:(nullable MYUser *)user withMsgType:(MYMessageType)msgType;
+- (MYMessage *)sendContext:(nullable NSString  *)content toUser:(nullable MYUser *)user withMsgType:(MYMessageType)msgType;
 
 - (void)addChatDelegate:(id<MYChatManagerDelegate>)delegate;
 

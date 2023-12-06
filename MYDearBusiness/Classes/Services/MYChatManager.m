@@ -25,6 +25,7 @@ NSString *const CHAT_CONNECT_FAILURE = @"CHAT_CONNECT_FAILURE";
 @property (nonatomic, strong) NSTimer *heartbeatTimer;/**<  心跳机制 */
 @property (nonatomic, strong) NSTimer *reconnectWaitTimer;/**<  重连等待时间 */
 @property (nonatomic, assign) int retryCount;/**<  重试次数 */
+@property (nonatomic, assign) BOOL isRetry;/**<  是否在重试中 */
 
 @end
 
@@ -111,7 +112,7 @@ static MYChatManager *__onetimeClass;
 
 - (void)reconnectSocket {
     _retryCount--;
-    [MYLog debug:@"reconnectSocket"];
+    [MYLog debug:@"☎️[MYChatManager]reconnectSocket"];
     if (!TheSocket.isConnect) {
         [TheSocket connect];
     }
@@ -129,19 +130,26 @@ static MYChatManager *__onetimeClass;
 
 - (void)didConnectFailure:(MYSocketManager *)manager error:(NSError *)error {
     [self clearHeartbeat];
-    [self resetRetryCount];
-    [self reconnectSocket];
-    if (!_retryCount) {
-        [self clearWaitTimer];
-        for (id<MYChatManagerDelegate> delegate in self.delegateArray) {
-            if ([delegate respondsToSelector:@selector(chatManagerIsDisConnect:)]) {
-                [delegate chatManagerIsDisConnect:self];
+    if (TheUserManager.user.token && !self.isRetry) {
+        self.isRetry = YES;
+        [self resetRetryCount];
+        [self reconnectSocket];
+        [self resetWaitTimer];
+        if (_retryCount < 0) {
+            self.isRetry = NO;
+            [self clearWaitTimer];
+            for (id<MYChatManagerDelegate> delegate in self.delegateArray) {
+                if ([delegate respondsToSelector:@selector(chatManagerIsDisConnect:)]) {
+                    [delegate chatManagerIsDisConnect:self];
+                }
             }
         }
     }
+    
 }
 
 - (void)didWriteDataSuccess:(MYSocketManager *)manager tag:(long)tag {
+    //TODO: wmy ?
     for (id<MYChatManagerDelegate> delegate in self.delegateArray) {
         if ([delegate respondsToSelector:@selector(chatManager:sendMessageSuccessWithTag:)]) {
             [delegate chatManager:self sendMessageSuccessWithTag:tag];
@@ -150,7 +158,7 @@ static MYChatManager *__onetimeClass;
 }
 
 - (void)didReceiveOnManager:(MYSocketManager *)manager message:(MYMessage *)message {
-    [self clearHeartbeat];
+    [self resetHeartbeat];
     if (message.messageType == MYMessageType_REQUEST_LOGIN) {
         NSString *content = message.content;
         if (content.intValue == MAGIC_NUMBER) {
@@ -159,31 +167,37 @@ static MYChatManager *__onetimeClass;
             [self sendContext:TheUserManager.user.token toUser:nil withMsgType:MYMessageType_REQUEST_OFFLINE_MSGS];
         } else {
             //TODO: wmy 重试机制
-            NSLog(@"connect failure:%@",content);
+            NSLog(@"☎️[MYChatManager]connect failure:%@",content);
             [NSNotificationCenter.defaultCenter postNotificationName:CHAT_CONNECT_FAILURE object:nil];
         }
+    } else if (message.messageType == MYMessageType_SEND_SUCCESS_MESSAGE) {
+        NSTimeInterval tag = message.content.doubleValue;
+        for (id<MYChatManagerDelegate> delegate in self.delegateArray) {
+            if ([delegate respondsToSelector:@selector(chatManager:sendMessageSuccessWithTag:)]) {
+                [delegate chatManager:self sendMessageSuccessWithTag:tag];
+            }
+        }
     } else if (message.messageType == MYMessageType_REQUEST_OFFLINE_MSGS) {
-//        [self clearHeartbeat];
+        ;;
     } else if (message.messageType == MYMessageType_REQUEST_HEART_BEAT) {
-//        [self resetHeartbeat];
+        ;;
     } else if (message.messageType == MYMessageType_CHAT_MESSAGE) {
-//        [self resetHeartbeat];
         for (id<MYChatManagerDelegate> delegate in self.delegateArray) {
             if ([delegate respondsToSelector:@selector(chatManager:didReceiveMessage:fromUser:)]) {
                 MYUser *user = [MYUser convertFromDBModel:[theChatUserManager chatPersonWithUserId:message.fromId]];
-                //TODO: wmy 添加到聊天窗口中
                 [delegate chatManager:self didReceiveMessage:message fromUser:user];
             }
         }
     }
 }
 
-- (void)sendContext:(NSString *)content toUser:(MYUser *)user withMsgType:(MYMessageType)msgType {
+- (MYMessage *)sendContext:(NSString *)content toUser:(MYUser *)user withMsgType:(MYMessageType)msgType {
     MYMessage *message = [MYMessageFactory messageWithMesssageType:msgType];
     message.content = content;
     message.toId = user.userId;
     message.toEntity = MYMessageEntiteyType_USER;
     [TheSocket sendMessage:message];
+    return message;
 }
 
 
@@ -205,6 +219,11 @@ static MYChatManager *__onetimeClass;
                                             userInfo:nil repeats:YES];
 }
 
+- (void)resetWaitTimer {
+    [self clearWaitTimer];
+    [self startWaitTimer];
+}
+
 - (void)startWaitTimer {
     NSInteger waitTime = 2 * 60;
     _reconnectWaitTimer = [NSTimer scheduledTimerWithTimeInterval:waitTime target:self selector:@selector(reconnectSocket) userInfo:nil repeats:YES];
@@ -224,6 +243,7 @@ static MYChatManager *__onetimeClass;
 #pragma mark - notification
 
 - (void)onReceiveLogoutNotification {
+    [MYLog debug:@"☎️[MYChatManager]收到退出登录消息，断连"];
     [TheSocket disConnect];
 }
 
@@ -231,6 +251,7 @@ static MYChatManager *__onetimeClass;
     //1. 开启长连接
     [TheSocket disConnect];
     [TheSocket connect];
+    [MYLog debug:@"☎️[MYChatManager]开启长连接"];
 }
 
 

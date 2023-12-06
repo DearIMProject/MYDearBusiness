@@ -94,7 +94,6 @@ __MY_ROUTER_REGISTER__
 }
 
 - (void)addKeyboardNotification {
-    
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(onReceiveKeyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(onReceiveKeyboardDidHide:) name:UIKeyboardWillHideNotification object:nil];
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(onReceiveKeyboardDidChange:) name:UIKeyboardDidChangeFrameNotification object:nil];
@@ -138,7 +137,8 @@ __MY_ROUTER_REGISTER__
 #pragma mark - MYChatTextViewDelegate
 
 - (void)textView:(MYChatTextView *)textView didClickSendButtonWithText:(NSString *)text {
-    [theChatManager sendContext:text toUser:self.viewModel.model withMsgType:MYMessageType_CHAT_MESSAGE];
+    MYMessage *message = [theChatManager sendContext:text toUser:self.viewModel.model withMsgType:MYMessageType_CHAT_MESSAGE];
+    [self.datasource addChatMessage:message byUser:self.viewModel.model];
 }
 
 #pragma mark - MYChatManagerDelegate
@@ -146,6 +146,10 @@ __MY_ROUTER_REGISTER__
 - (void)chatManager:(MYChatManager *)manager didReceiveMessage:(MYMessage *)message fromUser:(MYUser *)user {
     NSLog(@"content:%@",message.content);
     [self.datasource addChatMessage:message byUser:user];
+}
+
+- (void)chatManager:(MYChatManager *)manager sendMessageSuccessWithTag:(long)tag {
+    [self.datasource successMessageWithTag:tag];
 }
 
 #pragma mark - Event Response

@@ -13,7 +13,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MYChatPersonDataSource : MYDataSource
 
-- (void)addMessage:(MYMessage *)message fromUser:(MYUser *)user;
+- (void)addMessage:(nullable MYMessage *)message fromUser:(MYUser *)user;
+
+@property (nonatomic, strong) MYInteractor *interactor;
 
 @end
 
