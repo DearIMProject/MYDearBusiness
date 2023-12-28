@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MYChatMessageViewModel : MYViewModel
 
-@property(nonatomic, strong) NSString *content;/**<  消息内容 */
+@property(nonatomic, strong, readonly) NSString *content;/**<  消息内容 */
 @property (nonatomic, assign, readonly) NSTimeInterval tag;
 
 @property (nonatomic, strong) MYMessage *model;

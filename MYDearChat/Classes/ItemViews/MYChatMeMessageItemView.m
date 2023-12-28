@@ -18,7 +18,7 @@
 @property (nonatomic, strong) UIImageView *meIconImageView;/**<  自己头像 */
 @property(nonatomic, strong) UIStackView *stackView;
 
-@property (nonatomic, strong) UIProgressView *progressView;
+@property (nonatomic, strong) UIActivityIndicatorView *progressView;
 
 @end
 
@@ -26,6 +26,7 @@
 @dynamic viewModel;
 
 #pragma mark - dealloc
+
 #pragma mark - life cycle
 
 - (instancetype)init {
@@ -69,6 +70,11 @@
     self.meIconImageView.hidden = NO;
     
     self.progressView.hidden = (viewModel.sendSuccessStatus != MYMessageStatus_loading);
+    if (self.progressView.hidden) {
+        [self.progressView stopAnimating];
+    } else {
+        [self.progressView startAnimating];
+    }
 }
 
 #pragma mark - private methods
@@ -84,6 +90,9 @@
         _stackView.axis = UILayoutConstraintAxisHorizontal;
         _stackView.spacing = kMargin * 0.5;
         _stackView.alignment = UIStackViewAlignmentLeading;
+        [self.progressView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(40, 40));
+        }];
         [self.meIconImageView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.width.height.mas_equalTo(kSecondIconWidth);
         }];
@@ -128,9 +137,9 @@
     return _meIconImageView;
 }
 
-- (UIProgressView *)progressView {
+- (UIActivityIndicatorView *)progressView {
     if (!_progressView) {
-        _progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
+        _progressView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
     }
     return _progressView;
 }

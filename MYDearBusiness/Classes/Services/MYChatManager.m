@@ -56,6 +56,14 @@ static MYChatManager *__onetimeClass;
         [NSNotificationCenter.defaultCenter addObserver:self
                                                selector:@selector(onReceiveLogoutNotification)
                                                    name:LOGOUT_NOTIFICATION object:nil];
+        
+        [NSNotificationCenter.defaultCenter addObserver:self
+                                               selector:@selector(onReceiveBackgroundNotification)
+                                                   name:UIApplicationDidEnterBackgroundNotification object:nil];
+        [NSNotificationCenter.defaultCenter addObserver:self
+                                               selector:@selector(onReceiveForgroundNotifiation)
+                                                   name:UISceneWillEnterForegroundNotification object:nil];
+        
         _delegateArray = [NSMutableArray array];
         _retryCount = 3;
     }
@@ -91,7 +99,40 @@ static MYChatManager *__onetimeClass;
 
 #pragma mark - notification
 
+- (void)onReceiveLogoutNotification {
+    [MYLog debug:@"☎️[MYChatManager]收到退出登录消息，断连"];
+    [TheSocket disConnect];
+}
+
+- (void)onReceiveLoginNotification {
+    //1. 开启长连接
+    [self connectSocket];
+    [MYLog debug:@"☎️[MYChatManager]收到登录的消息，开启长连接"];
+}
+
+- (void)connectSocket {
+    if (!TheSocket.isConnect) {
+        [TheSocket disConnect];
+        [TheSocket connect];
+    }
+}
+
+- (void)onReceiveForgroundNotifiation {
+    [self connectSocket];
+    
+    [MYLog debug:@"☎️[MYChatManager]收到切换到前台的消息，开启长连接"];
+}
+
+- (void)onReceiveBackgroundNotification {
+    [MYLog debug:@"☎️[MYChatManager]收到进入后台的消息，断连"];
+    [TheSocket disConnect];
+}
+
 - (void)onReceiveNetworkStateChange {
+    [MYLog debug:@"☎️[MYChatManager]网络状态发生变化了"];
+    if (self.isRetry) {
+        return;
+    }
     [self resetRetryCount];
     // 1.检测wifi状态
     Reachability *wifi = [Reachability reachabilityForLocalWiFi];
@@ -99,21 +140,22 @@ static MYChatManager *__onetimeClass;
     Reachability *conn = [Reachability reachabilityForInternetConnection];
     // 3.判断网络状态
     if ([wifi currentReachabilityStatus] != NotReachable) { // 有wifi
-//        NSLog(@"有wifi");
+        [MYLog debug:@"☎️[MYChatManager]当前网络状态为wifi"];
         [self reconnectSocket];
     } else if ([conn currentReachabilityStatus] != NotReachable) { // 没有使用wifi, 使用手机自带网络进行上网
-//        NSLog(@"使用手机自带网络进行上网");
+        [MYLog debug:@"☎️[MYChatManager]当前网络状态为手机自带网络"];
         [self reconnectSocket];
     } else { // 没有网络
-//        NSLog(@"没有网络");
+        [MYLog debug:@"☎️[MYChatManager]当前木有网络"];
         [TheSocket disConnect];
     }
 }
 
 - (void)reconnectSocket {
     _retryCount--;
-    [MYLog debug:@"☎️[MYChatManager]reconnectSocket"];
-    if (!TheSocket.isConnect) {
+    [MYLog debug:@"☎️[MYChatManager]尝试重新连接socket"];
+    if (!TheSocket.isConnect && self.isRetry) {
+        [MYLog debug:@"☎️[MYChatManager]正在重连reconnectSocket"];
         [TheSocket connect];
     }
 }
@@ -145,7 +187,6 @@ static MYChatManager *__onetimeClass;
             }
         }
     }
-    
 }
 
 - (void)didWriteDataSuccess:(MYSocketManager *)manager tag:(long)tag {
@@ -165,6 +206,11 @@ static MYChatManager *__onetimeClass;
             //success
             [NSNotificationCenter.defaultCenter postNotificationName:CHAT_CONNECT_SUCCESS object:nil];
             [self sendContext:TheUserManager.user.token toUser:nil withMsgType:MYMessageType_REQUEST_OFFLINE_MSGS];
+            for (id<MYChatManagerDelegate> delegate in self.delegateArray) {
+                if ([delegate respondsToSelector:@selector(chatManagerIsConnectSuccess:)]) {
+                    [delegate chatManagerIsConnectSuccess:self];
+                }
+            }
         } else {
             //TODO: wmy 重试机制
             NSLog(@"☎️[MYChatManager]connect failure:%@",content);
@@ -240,19 +286,6 @@ static MYChatManager *__onetimeClass;
     [self sendContext:nil toUser:nil withMsgType:MYMessageType_REQUEST_HEART_BEAT];
 }
 
-#pragma mark - notification
-
-- (void)onReceiveLogoutNotification {
-    [MYLog debug:@"☎️[MYChatManager]收到退出登录消息，断连"];
-    [TheSocket disConnect];
-}
-
-- (void)onReceiveLoginNotification {
-    //1. 开启长连接
-    [TheSocket disConnect];
-    [TheSocket connect];
-    [MYLog debug:@"☎️[MYChatManager]开启长连接"];
-}
 
 
 @end

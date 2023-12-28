@@ -27,13 +27,34 @@ FOUNDATION_EXPORT NSString *const CHAT_CONNECT_FAILURE;
 
 @protocol MYChatManagerDelegate <NSObject>
 
+@optional;
+
+/// 收到message消息
+/// - Parameters:
+///   - manager: manager
+///   - message: 消息实例
+///   - user: 来自用户的消息
 - (void)chatManager:(MYChatManager *)manager didReceiveMessage:(MYMessage *)message fromUser:(MYUser *)user;
+
+/// 消息发送成功
+/// - Parameters:
+///   - manager: manager
+///   - tag: 消息tag 事实上为timestamp
 - (void)chatManager:(MYChatManager *)manager sendMessageSuccessWithTag:(long)tag;
 
+/// 收到离线消息
+/// - Parameters:
+///   - manager: manager
+///   - messages: 离线消息list
 - (void)chatManager:(MYChatManager *)manager onReceiveOfflineManager:(NSArray<MYMessage *> *)messages;
 
+/// 和服务器长连接断连
+/// - Parameter manager: manager
 - (void)chatManagerIsDisConnect:(MYChatManager *)manager;
 
+/// 和服务器连接成功
+/// - Parameter manager: manager
+- (void)chatManagerIsConnectSuccess:(MYChatManager *)manager;
 @end
 
 

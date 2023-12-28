@@ -15,7 +15,6 @@
 
 @property(nonatomic, weak) MYDBUser *dataChatPerson;
 @property(nonatomic, assign) long fromId;/**<  消息发送方 */
-@property (nonatomic, assign) MYMessageStatus sendSuccessStatus;
 @property (nonatomic, assign) NSTimeInterval tag;
 
 @end
@@ -36,12 +35,18 @@
 
 - (void)convertWithMessage:(MYMessage *)message {
     self.model = message;
-    self.content = message.content;
     self.fromId = message.fromId;
-    self.sendSuccessStatus = message.sendStatus;
     self.tag = message.timestamp;
     //TODO: wmy 通过通讯录获取icon
     self.dataChatPerson = [theChatUserManager chatPersonWithUserId:message.fromId];
+}
+
+- (MYMessageStatus)sendSuccessStatus {
+    return self.model.sendStatus;
+}
+
+- (NSString *)content {
+    return self.model.content;
 }
 
 - (void)setMsgSendSuccess {

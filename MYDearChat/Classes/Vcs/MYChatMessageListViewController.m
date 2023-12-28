@@ -138,7 +138,7 @@ __MY_ROUTER_REGISTER__
 
 - (void)textView:(MYChatTextView *)textView didClickSendButtonWithText:(NSString *)text {
     MYMessage *message = [theChatManager sendContext:text toUser:self.viewModel.model withMsgType:MYMessageType_CHAT_MESSAGE];
-    [self.datasource addChatMessage:message byUser:self.viewModel.model];
+    [self.datasource addChatMessage:message byUser:TheUserManager.user];
 }
 
 #pragma mark - MYChatManagerDelegate

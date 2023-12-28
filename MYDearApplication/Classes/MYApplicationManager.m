@@ -89,7 +89,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [MYApplicationNotificationManager.shared setup];
-    NSString *apiAddress = @"172.16.92.107";
+    NSString *apiAddress = @"172.16.92.96";
     theNetworkManager.host = apiAddress;
     TheSocket.host = apiAddress;
     

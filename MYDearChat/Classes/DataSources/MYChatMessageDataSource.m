@@ -68,6 +68,9 @@
             break;
         }
     }
+    if (self.successBlock) {
+        self.successBlock();
+    }
 }
 
 @end

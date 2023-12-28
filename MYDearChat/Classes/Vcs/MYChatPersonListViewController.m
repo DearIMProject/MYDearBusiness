@@ -56,6 +56,9 @@
         [self.tableView.mj_header endRefreshing];
         [MBProgressHUD hideHUDForView:self.view];
         [self.tableView reloadData];
+        if (!self.dataSources.sectionModels.firstObject.viewModels.count) {
+            [MYRouter routerURL:@"changeTabAddressbook" withParameters:nil];
+        }
     };
     self.dataSources.failureBlock = ^(NSError * _Nonnull error) {
         @strongify(self);

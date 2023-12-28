@@ -61,8 +61,6 @@
         @strongify(self);
         self.selectedIndex = 2;
     }];
-    
-    
 }
 
 - (void)initView {

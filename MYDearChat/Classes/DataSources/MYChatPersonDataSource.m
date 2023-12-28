@@ -34,6 +34,7 @@
 }
 
 - (void)request {
+    [self.chatPersonVMs removeAllObjects];
     long userId = TheUserManager.user.userId;
     NSArray<MYDBUser *> *chatPersons = [theDatabase getChatListWithUserId:userId];
     for (MYDBUser *chatPerson in chatPersons) {
