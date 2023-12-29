@@ -38,6 +38,7 @@ __MY_ROUTER_REGISTER__
     if (self = [super initWithParam:param]) {
         self.viewModel = param[@"viewModel"];
         self.datasource.viewModel = self.viewModel;
+        self.interactor = param[@"interactor"];
     }
     return self;
 }
@@ -61,6 +62,10 @@ __MY_ROUTER_REGISTER__
 }
 
 - (void)initView {
+    if (!self.interactor) {
+        _interactor = [[MYInteractor alloc] init];
+    }
+    self.autolayoutDelegate.interactor = self.interactor;
     self.tableView.dataSource = self.autolayoutDelegate;
     self.tableView.delegate = self.autolayoutDelegate;
     self.autolayoutDelegate.dataSource = self.datasource;
@@ -77,13 +82,13 @@ __MY_ROUTER_REGISTER__
 }
 
 - (void)initData {
-
+    
     @weakify(self);
     self.datasource.successBlock = ^{
         @strongify(self);
         [self.tableView reloadData];
     };
-    self.datasource.failureBlock = ^(NSError *_Nonnull error) {
+    self.datasource.failBlock = ^(NSError *_Nonnull error) {
         @strongify(self);
         [self.tableView reloadData];
     };
@@ -137,8 +142,7 @@ __MY_ROUTER_REGISTER__
 #pragma mark - MYChatTextViewDelegate
 
 - (void)textView:(MYChatTextView *)textView didClickSendButtonWithText:(NSString *)text {
-    MYMessage *message = [theChatManager sendContext:text toUser:self.viewModel.model withMsgType:MYMessageType_CHAT_MESSAGE];
-    [self.datasource addChatMessage:message byUser:TheUserManager.user];
+    [self.datasource sendMessageContent:text];
 }
 
 #pragma mark - MYChatManagerDelegate

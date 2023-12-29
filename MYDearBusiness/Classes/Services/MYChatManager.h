@@ -25,6 +25,12 @@ FOUNDATION_EXPORT NSString *const CHAT_CONNECT_FAILURE;
 @class MYChatManager;
 
 
+typedef enum : NSUInteger {
+    MYChatManagerConnectStatus_Success,
+    MYChatManagerConnectStatus_Connecting,
+    MYChatManagerConnectStatus_Failure,
+} MYChatManagerConnectStatus;
+
 @protocol MYChatManagerDelegate <NSObject>
 
 @optional;
@@ -48,13 +54,10 @@ FOUNDATION_EXPORT NSString *const CHAT_CONNECT_FAILURE;
 ///   - messages: 离线消息list
 - (void)chatManager:(MYChatManager *)manager onReceiveOfflineManager:(NSArray<MYMessage *> *)messages;
 
-/// 和服务器长连接断连
-/// - Parameter manager: manager
-- (void)chatManagerIsDisConnect:(MYChatManager *)manager;
+/// 当前长连接发生变化
+/// - Parameter connect: 是否连接
+- (void)chatManagerConnectChange:(MYChatManagerConnectStatus)connectStatus;
 
-/// 和服务器连接成功
-/// - Parameter manager: manager
-- (void)chatManagerIsConnectSuccess:(MYChatManager *)manager;
 @end
 
 

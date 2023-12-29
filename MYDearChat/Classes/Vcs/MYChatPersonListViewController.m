@@ -60,7 +60,7 @@
             [MYRouter routerURL:@"changeTabAddressbook" withParameters:nil];
         }
     };
-    self.dataSources.failureBlock = ^(NSError * _Nonnull error) {
+    self.dataSources.failBlock = ^(NSError * _Nonnull error) {
         @strongify(self);
         [self.tableView.mj_header endRefreshing];
         [MBProgressHUD hideHUDForView:self.view];

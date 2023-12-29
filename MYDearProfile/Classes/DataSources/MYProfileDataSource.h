@@ -9,6 +9,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#define kProfileUploadSuccessEvent @"kProfileUploadSuccessEvent"
+
 @class MYProfileDataSource;
 
 @protocol MYProfileDataSourceDelegate <NSObject>

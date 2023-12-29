@@ -19,6 +19,9 @@
 @property(nonatomic, strong) UIStackView *stackView;
 
 @property (nonatomic, strong) UIActivityIndicatorView *progressView;
+@property (nonatomic, strong) NSTimer *timer;
+
+@property (nonatomic, strong) UIImageView *retryImageView;
 
 @end
 
@@ -57,6 +60,12 @@
 
 #pragma mark - Event Response
 
+- (void)onSelected {
+    if (self.viewModel.sendSuccessStatus == MYMessageStatus_Failure) {
+        [self.interactor sendEventName:kMessageNeedSendEvent withObjects:self.viewModel];
+    }
+}
+
 - (void)setViewModel:(MYChatMessageViewModel *)viewModel {
     [super setViewModel:viewModel];
     if (![viewModel isKindOfClass:MYChatMessageViewModel.class]) {
@@ -72,8 +81,35 @@
     self.progressView.hidden = (viewModel.sendSuccessStatus != MYMessageStatus_loading);
     if (self.progressView.hidden) {
         [self.progressView stopAnimating];
+        [self stopTimer];
     } else {
         [self.progressView startAnimating];
+        [self startTimer];
+    }
+    
+    self.retryImageView.hidden = (viewModel.sendSuccessStatus != MYMessageStatus_Failure);
+}
+
+- (void)startTimer {
+    [self stopTimer];
+    [MYLog debug:@"startTimer"];
+    NSTimeInterval timeout = 3;
+    [NSTimer scheduledTimerWithTimeInterval:timeout repeats:NO block:^(NSTimer * _Nonnull timer) {
+        [self setMessageFailure];
+    }];
+}
+
+- (void)stopTimer {
+    [MYLog debug:@"stopTimer"];
+    [_timer timeInterval];
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(setMessageFailure) object:nil];
+    _timer = nil;
+}
+
+- (void)setMessageFailure {
+    if (self.viewModel.sendSuccessStatus == MYMessageStatus_loading) {
+        [MYLog debug:@"setMessageFailure"];
+        [self.interactor sendEventName:kMessageNeedRetryEvent withObjects:self.viewModel];
     }
 }
 
@@ -84,14 +120,20 @@
     if (!_stackView) {
         _stackView = [[UIStackView alloc] init];
         [_stackView addArrangedSubview:UIView.new];
+        [_stackView addArrangedSubview:self.retryImageView];
         [_stackView addArrangedSubview:self.progressView];
         [_stackView addArrangedSubview:self.contentView];
         [_stackView addArrangedSubview:self.meIconImageView];
         _stackView.axis = UILayoutConstraintAxisHorizontal;
         _stackView.spacing = kMargin * 0.5;
         _stackView.alignment = UIStackViewAlignmentLeading;
+        [self.retryImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(20, 20));
+            make.top.mas_equalTo(7);
+        }];
         [self.progressView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(40, 40));
+            make.size.mas_equalTo(CGSizeMake(20, 20));
+            make.top.mas_equalTo(7);
         }];
         [self.meIconImageView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.width.height.mas_equalTo(kSecondIconWidth);
@@ -142,6 +184,18 @@
         _progressView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
     }
     return _progressView;
+}
+
+- (UIImageView *)retryImageView {
+    if (!_retryImageView) {
+        _retryImageView = [[UIImageView alloc] init];
+        _retryImageView.image = [UIImage systemImageNamed:@"exclamationmark.circle.fill"];
+        _retryImageView.tintColor = TheSkin.warnColor;
+        _retryImageView.backgroundColor = TheSkin.whiteColor;
+        _retryImageView.layer.cornerRadius = 10;
+        _retryImageView.clipsToBounds = YES;
+    }
+    return _retryImageView;
 }
 
 @end

@@ -66,7 +66,7 @@
 }
 
 - (void)setInteractor:(MYInteractor *)interactor {
-    _interactor = interactor;
+    [super setInteractor:interactor];
     [interactor registerTarget:self action:@selector(onReceiveAddChatPerson:) forEventName:kClickAddressItemEventName];
 }
 

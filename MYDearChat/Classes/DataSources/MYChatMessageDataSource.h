@@ -17,9 +17,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) MYChatPersonViewModel *viewModel;
 
+@property (nonatomic, strong) MYInteractor *interactor; 
+
 - (void)addChatMessage:(MYMessage *)message byUser:(MYUser *)user;
 
 - (void)successMessageWithTag:(NSTimeInterval)tag;
+
+- (void)sendMessageContent:(NSString *)content;
 
 @end
 

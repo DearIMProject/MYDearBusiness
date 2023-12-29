@@ -87,7 +87,7 @@
     //TODO: wmy
 #if DEBUG
     self.emailTextField.text = @"iphonex@apple.com";// iphonex
-//    self.emailTextField.text = @"305662816@qq.com";// iphonexs
+    self.emailTextField.text = @"305662816@qq.com";// iphonexs
 //    self.emailTextField.text = @"simulator@apple.com";// 模拟器
     self.pwdTextField.text = @"apple";
 #endif

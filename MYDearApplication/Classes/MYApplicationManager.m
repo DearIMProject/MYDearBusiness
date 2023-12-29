@@ -47,12 +47,11 @@
 }
 
 - (void)setupLogger {
-    [DDLog addLogger:[DDASLLogger sharedInstance] withLevel:DDLogLevelAll];
     [DDLog addLogger:[DDTTYLogger sharedInstance] withLevel:DDLogLevelAll];
-    [[DDTTYLogger sharedInstance] setColorsEnabled:YES];
+    // 配置文件日志输出
     DDFileLogger *fileLogger = [[DDFileLogger alloc] init];
-    fileLogger.rollingFrequency = 60 * 60 * 24; // 24 hour rolling
-    fileLogger.logFileManager.maximumNumberOfLogFiles = 7;
+    fileLogger.rollingFrequency = 60 * 60 * 24; // 每24小时创建一个新文件
+    fileLogger.logFileManager.maximumNumberOfLogFiles = 7; // 保留最近7天的日志文件
     [DDLog addLogger:fileLogger];
 }
 

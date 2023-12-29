@@ -11,6 +11,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#define kMessageNeedRetryEvent @"kMessageNeedRetryEvent"// 消息重试
+#define kMessageNeedSendEvent @"kMessageNeedSendEvent"// 消息重发
+
 @interface MYChatMessageViewModel : MYViewModel
 
 @property(nonatomic, strong, readonly) NSString *content;/**<  消息内容 */

@@ -42,7 +42,7 @@
         [MBProgressHUD hideHUDForView:self.view];
         [self.tableView reloadData];
     };
-    self.datasource.failureBlock = ^(NSError * _Nonnull error) {
+    self.datasource.failBlock = ^(NSError * _Nonnull error) {
         @strongify(self);
         [self.tableView.mj_header endRefreshing];
         [MBProgressHUD hideHUDForView:self.view];

@@ -19,7 +19,12 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = @"profile".local;
+    [self initView];
+    [self initData];
+}
+
+- (void)initData {
+    [self.interactor registerTarget:self action:@selector(onReceiveLogSuccess:) forEventName:kProfileUploadSuccessEvent];
     self.tableViewDelegate.dataSource = self.dataSource;
     self.tableViewDelegate.interactor = self.interactor;
     self.dataSource.interactor = self.interactor;
@@ -28,6 +33,10 @@
         @strongify(self);
         [self.tableView reloadData];
     };
+}
+
+- (void)initView {
+    self.title = @"profile".local;
     [self.dataSource request];
 }
 
@@ -38,6 +47,12 @@
         self.tabBarItem.selectedImage = [UIImage systemImageNamed:@"person.fill"];
     }
     return self;
+}
+
+#pragma mark - event
+
+- (void)onReceiveLogSuccess:(NSString *)content {
+    [MBProgressHUD showSuccess:content toView:self.view];
 }
 
 #pragma mark - MYProfileDataSourceDelegate

@@ -8,6 +8,7 @@
 #import "MYChatMessageDataSource.h"
 #import "MYChatMessageViewModel.h"
 #import "MYMessage+MYConvert.h"
+#import <MYDearBusiness/MYDearBusiness.h>
 #import <MYClientDatabase/MYClientDatabase.h>
 
 #import "MYChatPersonViewModel.h"
@@ -33,6 +34,12 @@
     return self;
 }
 
+- (void)setInteractor:(MYInteractor *)interactor {
+    [super setInteractor: interactor];
+    [self.interactor registerTarget:self action:@selector(onReceiveRetry:) forEventName:kMessageNeedRetryEvent];
+    [self.interactor registerTarget:self action:@selector(onReceiveResend:) forEventName:kMessageNeedSendEvent];
+}
+
 - (void)request {
     NSArray<MYDataMessage *> *dataMessages = [theDatabase getChatMessageWithPerson:self.viewModel.userId belongToUserId:TheUserManager.uid];
     for (MYDataMessage *dataMessage in dataMessages) {
@@ -40,6 +47,25 @@
         [vm convertWithDataModel:dataMessage];
         [self.vms addObject:vm];
     }
+    if (self.successBlock) {
+        self.successBlock();
+    }
+}
+
+- (void)onReceiveResend:(MYChatMessageViewModel *)viewModel {
+    [self sendMessageContent:viewModel.content];
+}
+
+
+- (void)sendMessageContent:(NSString *)content {
+    MYMessage *message = [theChatManager sendContext:content
+                                              toUser:self.viewModel.model
+                                         withMsgType:MYMessageType_CHAT_MESSAGE];
+    [self addChatMessage:message byUser:TheUserManager.user];
+}
+
+- (void)onReceiveRetry:(MYChatMessageViewModel *)viewModel {
+    viewModel.model.sendStatus = MYMessageStatus_Failure;
     if (self.successBlock) {
         self.successBlock();
     }
