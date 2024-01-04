@@ -19,9 +19,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) MYInteractor *interactor; 
 
-- (void)addChatMessage:(MYMessage *)message byUser:(MYUser *)user;
+/// 添加一个消息
+/// - Parameters:
+///   - message: 消息
+///   - user: 当前用户和谁聊天
+- (void)addChatMessage:(MYMessage *)message withUser:(MYUser *)user;
 
-- (void)successMessageWithTag:(NSTimeInterval)tag;
+- (void)successMessageWithTag:(NSTimeInterval)tag messageId:(long long)messageId;
 
 - (void)sendMessageContent:(NSString *)content;
 

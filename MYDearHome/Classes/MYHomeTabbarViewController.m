@@ -52,14 +52,17 @@
     [MYRouter registerRouter:@"chanageTabChat" handlerAction:^BOOL(NSDictionary *param) {
         @strongify(self);
         self.selectedIndex = 0;
+        [self setSelectedViewController:self.chatVC];
     }];
     [MYRouter registerRouter:@"changeTabAddressbook" handlerAction:^BOOL(NSDictionary *param) {
         @strongify(self);
         self.selectedIndex = 1;
+        [self setSelectedViewController:self.addressListVC];
     }];
     [MYRouter registerRouter:@"changeTabProfile" handlerAction:^BOOL(NSDictionary *param) {
         @strongify(self);
         self.selectedIndex = 2;
+        [self setSelectedViewController:self.profileVC];
     }];
 }
 

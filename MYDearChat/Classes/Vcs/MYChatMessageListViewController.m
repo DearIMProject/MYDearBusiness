@@ -6,6 +6,7 @@
 //
 
 #import "MYChatMessageListViewController.h"
+#import <MYUIKit/MYUIKit.h>
 #import <IQKeyboardManager/IQKeyboardManager.h>
 #import "MYViewController+MYRouter.h"
 #import "MYChatMessageDataSource.h"
@@ -86,17 +87,35 @@ __MY_ROUTER_REGISTER__
     @weakify(self);
     self.datasource.successBlock = ^{
         @strongify(self);
-        [self.tableView reloadData];
+        [self reloadData];
     };
     self.datasource.failBlock = ^(NSError *_Nonnull error) {
         @strongify(self);
-        [self.tableView reloadData];
+        [self reloadData];
     };
     [self.datasource request];
 
     [self addKeyboardNotification];
     
 }
+
+- (void)reloadData {
+    [self.tableView reloadData];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self scrollToBottom];
+    });
+}
+
+// 滚动到底部
+- (void)scrollToBottom {
+    int count = self.datasource.sectionModels.firstObject.viewModels.count;
+    if (count > 0) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:count - 1 inSection:0];
+        [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:NO];
+    }
+}
+
 
 - (void)addKeyboardNotification {
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(onReceiveKeyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
@@ -149,11 +168,12 @@ __MY_ROUTER_REGISTER__
 
 - (void)chatManager:(MYChatManager *)manager didReceiveMessage:(MYMessage *)message fromUser:(MYUser *)user {
     NSLog(@"content:%@",message.content);
-    [self.datasource addChatMessage:message byUser:user];
+    message.sendStatus = MYMessageStatus_Success;
+    [self.datasource addChatMessage:message withUser:user];
 }
 
-- (void)chatManager:(MYChatManager *)manager sendMessageSuccessWithTag:(long)tag {
-    [self.datasource successMessageWithTag:tag];
+- (void)chatManager:(MYChatManager *)manager sendMessageSuccessWithTag:(long)tag messageId:(long long)messageId {
+    [self.datasource successMessageWithTag:tag messageId:messageId];
 }
 
 #pragma mark - Event Response

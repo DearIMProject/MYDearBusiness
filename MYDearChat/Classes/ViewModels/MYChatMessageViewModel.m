@@ -49,13 +49,20 @@
     return self.model.content;
 }
 
-- (void)setMsgSendSuccess {
-    //TODO: wmy
+- (void)setMsgSendSuccessWithUserId:(long long)userId {
+    // 调用dataclient进行
+    [MYLog debug:@"收到消息推送成功消息"];
+    BOOL isSuccess = [theDatabase sendSuccessWithTimer:self.model.timestamp messageId:self.model.msgId withUserId:userId belongToUserId:TheUserManager.uid];
     self.model.sendStatus = MYMessageStatus_Success;
 }
 
 - (NSString *)iconURL {
-    return self.dataChatPerson.iconURL;
+    //TODO: wmy 这里如果iconURL为空，直接获取数据库中的url；
+    if ([self isBelongMe]) {
+        return [theDatabase getChatPersonWithUserId:TheUserManager.uid].iconURL;
+    } else {
+        return [theDatabase getChatPersonWithUserId:self.dataChatPerson.userId].iconURL;
+    }
 }
 
 - (BOOL)isBelongMe {

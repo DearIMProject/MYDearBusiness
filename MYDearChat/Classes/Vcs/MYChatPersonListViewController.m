@@ -69,6 +69,11 @@
     [self.dataSources request];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [self.tableView reloadData];
+}
+
 - (void)initView {
     self.title = @"chat".local;
     self.tableViewDelegate.dataSource = self.dataSources;

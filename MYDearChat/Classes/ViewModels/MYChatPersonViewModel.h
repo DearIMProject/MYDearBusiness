@@ -26,6 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)converFromUser:(MYUser *)user;
 
+- (void)configNumberToZero;
+
 @end
 
 NS_ASSUME_NONNULL_END

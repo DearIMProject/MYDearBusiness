@@ -42,8 +42,13 @@
         [IQKeyboardManager sharedManager].shouldResignOnTouchOutside = YES;
         [theChatManager initChat];
         [self setupLogger];
+        [self configNotification];
     }
     return self;
+}
+
+- (void)configNotification {
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(onReceiveLogoutNotification) name:LOGOUT_NOTIFICATION object:nil];
 }
 
 - (void)setupLogger {
@@ -84,11 +89,17 @@
     return self.naviController.topViewController;
 }
 
+#pragma mark - notification
+
+- (void)onReceiveLogoutNotification {
+    [self refreshRootViewController];
+}
+
 #pragma mark - appdelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [MYApplicationNotificationManager.shared setup];
-    NSString *apiAddress = @"172.16.92.96";
+    NSString *apiAddress = @"172.16.92.59";
     theNetworkManager.host = apiAddress;
     TheSocket.host = apiAddress;
     

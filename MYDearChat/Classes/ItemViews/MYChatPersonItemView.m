@@ -53,6 +53,8 @@
 
 - (void)onSelected {
     NSMutableDictionary *dict = @{}.mutableCopy;
+    //TODO: wmy 这里需要把tab的消息减少
+    [self.viewModel configNumberToZero];
     dict[@"viewModel"] = self.viewModel;
     [MYRouter routerURL:@"dearim://messagelist" withParameters:dict];
 }

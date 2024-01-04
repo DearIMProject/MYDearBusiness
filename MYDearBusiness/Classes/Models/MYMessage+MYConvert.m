@@ -19,6 +19,7 @@
     dbMessage.content = message.content;
     dbMessage.messageType = message.messageType;
     dbMessage.timestamp = message.timestamp;
+    dbMessage.sendStatus = message.sendStatus;
     return dbMessage;
 }
 

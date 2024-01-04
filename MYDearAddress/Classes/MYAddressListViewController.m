@@ -52,6 +52,11 @@
     [self.datasource request];
 }
 
+-(void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [self.tableView reloadData];
+}
+
 - (void)initView {
     self.tableViewDelegate.dataSource = self.datasource;
     @weakify(self);

@@ -92,7 +92,6 @@
 
 - (void)startTimer {
     [self stopTimer];
-    [MYLog debug:@"startTimer"];
     NSTimeInterval timeout = 3;
     [NSTimer scheduledTimerWithTimeInterval:timeout repeats:NO block:^(NSTimer * _Nonnull timer) {
         [self setMessageFailure];
@@ -100,15 +99,14 @@
 }
 
 - (void)stopTimer {
-    [MYLog debug:@"stopTimer"];
-    [_timer timeInterval];
+    [_timer invalidate];
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(setMessageFailure) object:nil];
     _timer = nil;
 }
 
 - (void)setMessageFailure {
     if (self.viewModel.sendSuccessStatus == MYMessageStatus_loading) {
-        [MYLog debug:@"setMessageFailure"];
+//        [MYLog debug:@"setMessageFailure"];
         [self.interactor sendEventName:kMessageNeedRetryEvent withObjects:self.viewModel];
     }
 }
@@ -119,7 +117,12 @@
 - (UIStackView *)stackView {
     if (!_stackView) {
         _stackView = [[UIStackView alloc] init];
-        [_stackView addArrangedSubview:UIView.new];
+        UIView *view = [[UIView alloc] init];
+#if DEBUG
+        view.layer.borderWidth = 1;
+        view.layer.borderColor = [UIColor redColor].CGColor;
+#endif
+        [_stackView addArrangedSubview:view];
         [_stackView addArrangedSubview:self.retryImageView];
         [_stackView addArrangedSubview:self.progressView];
         [_stackView addArrangedSubview:self.contentView];

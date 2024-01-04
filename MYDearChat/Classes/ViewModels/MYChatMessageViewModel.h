@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isBelongMe;
 
-- (void)setMsgSendSuccess;
+- (void)setMsgSendSuccessWithUserId:(long long)userId;
 
 @end
 

@@ -265,8 +265,8 @@ static MYChatManager *__onetimeClass;
     } else if (message.messageType == MYMessageType_SEND_SUCCESS_MESSAGE) {
         NSTimeInterval tag = message.content.doubleValue;
         for (id<MYChatManagerDelegate> delegate in self.delegateArray) {
-            if ([delegate respondsToSelector:@selector(chatManager:sendMessageSuccessWithTag:)]) {
-                [delegate chatManager:self sendMessageSuccessWithTag:tag];
+            if ([delegate respondsToSelector:@selector(chatManager:sendMessageSuccessWithTag:messageId:)]) {
+                [delegate chatManager:self sendMessageSuccessWithTag:tag messageId:message.msgId];
             }
         }
     } else if (message.messageType == MYMessageType_REQUEST_OFFLINE_MSGS) {
@@ -345,7 +345,6 @@ static MYChatManager *__onetimeClass;
     // 这里发送心跳包需要服务器
     [self resetWaitTimer];
 }
-
 
 
 @end

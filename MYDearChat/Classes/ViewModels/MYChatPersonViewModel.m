@@ -25,6 +25,10 @@
     
 }
 
+- (void)configNumberToZero {
+    //TODO: wmy 将未读的消息变为0
+}
+
 - (void)converFromUser:(MYUser *)user {
     self.model = user;
     self.name = user.username;

@@ -81,6 +81,7 @@
         if (failure) {
             failure(error);
         }
+        TheUserManager.user = nil;
         [NSNotificationCenter.defaultCenter postNotificationName:LOGOUT_NOTIFICATION object:nil];
     }];
 }

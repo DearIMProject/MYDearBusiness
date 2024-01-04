@@ -46,7 +46,8 @@ typedef enum : NSUInteger {
 /// - Parameters:
 ///   - manager: manager
 ///   - tag: 消息tag 事实上为timestamp
-- (void)chatManager:(MYChatManager *)manager sendMessageSuccessWithTag:(long)tag;
+///   - msgId: 消息Id
+- (void)chatManager:(MYChatManager *)manager sendMessageSuccessWithTag:(long)tag messageId:(long long)messageId;
 
 /// 收到离线消息
 /// - Parameters:

@@ -59,7 +59,8 @@
     if (message) {
         // 添加message到数据库中
         MYDataMessage *dbMessage = [MYMessage convertFromMessage:message];
-        [theDatabase addChatMessage:dbMessage fromUserId:user.userId belongToUserId:TheUserManager.uid];
+        [theDatabase addChatMessage:dbMessage withUserId:user.userId belongToUserId:TheUserManager.uid];
+        //TODO: wmy 这里添加一个消息，要通过消息管理中心来添加
         vm.messageNumber++;
     }
     if (self.successBlock) self.successBlock();

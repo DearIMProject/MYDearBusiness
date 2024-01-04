@@ -61,7 +61,7 @@
     MYMessage *message = [theChatManager sendContext:content
                                               toUser:self.viewModel.model
                                          withMsgType:MYMessageType_CHAT_MESSAGE];
-    [self addChatMessage:message byUser:TheUserManager.user];
+    [self addChatMessage:message withUser:self.viewModel.model];
 }
 
 - (void)onReceiveRetry:(MYChatMessageViewModel *)viewModel {
@@ -71,10 +71,10 @@
     }
 }
 
-- (void)addChatMessage:(MYMessage *)message byUser:(MYUser *)user {
+- (void)addChatMessage:(MYMessage *)message withUser:(MYUser *)user {
     // message添加到数据库中
     MYDataMessage *dbMessage = [MYMessage convertFromMessage:message];
-    [theDatabase addChatMessage:dbMessage fromUserId:user.userId belongToUserId:TheUserManager.uid];
+    [theDatabase addChatMessage:dbMessage withUserId:user.userId belongToUserId:TheUserManager.uid];
     // ui交互
     MYChatMessageViewModel *vm = [[MYChatMessageViewModel alloc] init];
     [vm convertWithDataModel:dbMessage];
@@ -84,12 +84,13 @@
     }
 }
 
-- (void)successMessageWithTag:(NSTimeInterval)tag {
+- (void)successMessageWithTag:(NSTimeInterval)tag messageId:(long long)messageId {
     NSEnumerator *reverseEnumerator = [self.vms reverseObjectEnumerator];
     MYChatMessageViewModel *vm;
     while (vm = [reverseEnumerator nextObject]) {
         if (vm.tag == tag) {
-            [vm setMsgSendSuccess];
+            vm.model.msgId = messageId;
+            [vm setMsgSendSuccessWithUserId:self.viewModel.userId];
             //TODO: wmy 调用数据库代码
             break;
         }
