@@ -23,7 +23,6 @@
 
 + (void)showAlert {
     UIAlertController *controller = [UIAlertController alertControllerWithTitle:@"设置IP地址" message:nil preferredStyle:UIAlertControllerStyleAlert];
-    controller.title = @"设置ip地址";
     
     [controller addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
         textField.keyboardType = UIKeyboardTypeNumbersAndPunctuation;

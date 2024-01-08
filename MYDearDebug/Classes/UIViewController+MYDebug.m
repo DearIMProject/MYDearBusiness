@@ -26,7 +26,6 @@
 
 @implementation UIViewController (MYDebug)
 
-
 - (MYDebugView *)debugView {
     return MYDearDebug.defaultDebug.debugView;
 }
@@ -62,10 +61,10 @@
         if (!self.hasDebugMove) {
             //TODO: wmy 跳转到debug页面
             MYDebugViewController *modalViewController = [[MYDebugViewController alloc] init];
-//            
+//
 //            // 创建导航控制器并设置根视图控制器为要显示的视图控制器
 //            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:modalViewController];
-//            
+//
 //            // 取消操作
 //            UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle:@"取消" style:UIBarButtonItemStylePlain
 //                                                                            target:modalViewController
