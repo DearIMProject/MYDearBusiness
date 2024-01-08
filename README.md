@@ -22,7 +22,7 @@ pod 'MYDearBusiness'
 
 ## Author
 
-温明妍, wenmy@tuya.com
+温明妍, wenmingyan1990@163.com
 
 ## License
 

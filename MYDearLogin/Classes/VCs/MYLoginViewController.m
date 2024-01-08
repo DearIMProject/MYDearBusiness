@@ -27,6 +27,7 @@
 
 @property (nonatomic, strong) UIButton *registerBtn;/**< 注册  */
 @property (nonatomic, strong) UIButton *fgtPwdBtn;/**< 忘记密码  */
+
 @end
 
 @implementation MYLoginViewController
