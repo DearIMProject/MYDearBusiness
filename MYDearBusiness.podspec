@@ -34,5 +34,21 @@ TODO: Add long description of the pod here.
   # s.frameworks = 'UIKit', 'MapKit'
    s.dependency 'MYNetwork'
    s.dependency 'MYRouter'
+   s.dependency 'MYUtils'
+   
+
+   s.subspec 'Debug' do |subspec|
+     subspec.source_files = 'MYDearBusiness/Debug/**/*'  # 模块的源代码文件
+     
+     # 模块的依赖关系
+     subspec.dependency 'MYDearDebug'
+
+     
+#     # 模块的其他设置
+#     module.frameworks = 'UIKit', 'Foundation'
+#     module.weak_frameworks = 'SomeFramework'
+#     module.pod_target_xcconfig = { 'OTHER_SWIFT_FLAGS' => '-D MODULE_NAME_ENABLED' }
+   end
+   
    
 end

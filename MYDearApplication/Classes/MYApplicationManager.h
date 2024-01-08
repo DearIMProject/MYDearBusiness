@@ -25,6 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIViewController *)topViewController;
 
+- (UINavigationController *)navi;
+
 #pragma mark - application
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions;
 

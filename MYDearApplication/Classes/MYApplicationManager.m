@@ -12,13 +12,15 @@
 #import <MYDearUser/MYDearUser.h>
 
 #import <MYNetwork/MYNetwork.h>
-#import <MYDearBusiness/ViewController.h>
 #import <MYDearBusiness/MYChatManager.h>
 
 #import <MYDearHome/MYHomeTabbarViewController.h>
 
 #import <UserNotifications/UserNotifications.h>
 #import "MYApplicationNotificationManager.h"
+
+#import <MYDearDebug/MYDearDebug.h>
+
 @interface MYApplicationManager ()
 
 @property(nonatomic, strong) MYNavigationViewController *naviController;
@@ -49,6 +51,15 @@
 
 - (void)configNotification {
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(onReceiveLogoutNotification) name:LOGOUT_NOTIFICATION object:nil];
+}
+
+- (void)setupDebugger {
+    [MYDearDebug.defaultDebug setupWithWindow:_mainWindow];
+}
+
+- (void)setMainWindow:(UIWindow *)mainWindow {
+    _mainWindow = mainWindow;
+    [self setupDebugger];
 }
 
 - (void)setupLogger {
@@ -85,6 +96,10 @@
     return navi;
 }
 
+- (UINavigationController *)navi {
+    return self.naviController;
+}
+
 - (UIViewController *)topViewController {
     return self.naviController.topViewController;
 }
@@ -99,7 +114,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [MYApplicationNotificationManager.shared setup];
-    NSString *apiAddress = @"172.16.92.59";
+    NSString *apiAddress = @"172.16.92.61";
     theNetworkManager.host = apiAddress;
     TheSocket.host = apiAddress;
     

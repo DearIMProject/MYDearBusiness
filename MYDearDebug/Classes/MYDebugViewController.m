@@ -1,20 +1,21 @@
 //
-//  ViewController.m
-//  DearIMProject
+//  MYDebugViewController.m
+//  MYDearDebug
 //
-//  Created by WenMingYan on 2023/9/22.
+//  Created by APPLE on 2024/1/8.
 //
 
-#import "ViewController.h"
+#import "MYDebugViewController.h"
 #import <Masonry/Masonry.h>
+#import "MYDearDebug.h"
 
-@interface ViewController () <UITableViewDelegate, UITableViewDataSource>
+@interface MYDebugViewController ()
 
 @property (nonatomic, strong) UITableView *tableView;
 
 @end
 
-@implementation ViewController
+@implementation MYDebugViewController
 
 
 #pragma mark - --------------------dealloc ------------------
@@ -37,13 +38,16 @@
     }];
 }
 
-
+- (void)dismissModalViewController {
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
 
 #pragma mark - --------------------UITableViewDelegate--------------
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"UITableViewCell"];
-    cell.textLabel.text = [[self names] objectAtIndex:indexPath.row];
+    MYDebugItemModel *itemModel = [[TheDebug.models[indexPath.section] itemModels] objectAtIndex:indexPath.row];
+    cell.textLabel.text = itemModel.itemName;
     return cell;
 }
 
@@ -52,18 +56,25 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [self names].count;
+    MYDebugSectionModel *sectionModel = TheDebug.models[section];
+    return sectionModel.itemModels.count;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
+    return TheDebug.models.count;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    NSString *title = [[self names] objectAtIndex:indexPath.row];
-    NSString *vcString = [self nameDict][title];
-    [self.navigationController pushViewController:[[NSClassFromString(vcString) alloc] init] animated:YES];
+    MYDebugItemModel *itemModel = [[TheDebug.models[indexPath.section] itemModels] objectAtIndex:indexPath.row];
+    if (itemModel.block) {
+        itemModel.block();
+    }
+}
+
+- (nullable NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+    MYDebugSectionModel *sectionModel = TheDebug.models[section];
+    return sectionModel.moduleName;
 }
 
 #pragma mark - --------------------CustomDelegate--------------
@@ -71,31 +82,16 @@
 #pragma mark - --------------------private methods--------------
 #pragma mark - --------------------getters & setters & init members ------------------
 
-- (NSDictionary<NSString *,NSString *> *)nameDict {
-    return @{
-        @"login":@"MYLoginViewController",
-        @"sendTest":@"MYTestChatViewController",
-        @"home":@"MYHomeTabbarViewController"
-    };
-}
-
-- (NSArray<NSString *> *)names {
-    return @[
-        @"login",
-        @"sendTest",
-        @"home"
-    ];
-}
-
 - (UITableView *)tableView {
     if (!_tableView) {
         _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
         _tableView.delegate = self;
         _tableView.dataSource = self;
+        _tableView.rowHeight = 44;
+        _tableView.sectionHeaderHeight = 30;
     }
     return _tableView;
 }
-
 
 
 @end
