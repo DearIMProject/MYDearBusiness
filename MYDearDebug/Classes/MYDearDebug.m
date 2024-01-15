@@ -86,7 +86,7 @@
             gestureRecognizer.state == UIGestureRecognizerStateEnded) {
             return _isInDebugView;
         }
-        return YES;
+        return _isInDebugView;
     }
     return NO;
 }

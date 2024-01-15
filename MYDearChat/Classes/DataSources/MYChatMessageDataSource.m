@@ -60,7 +60,7 @@
 - (void)sendMessageContent:(NSString *)content {
     MYMessage *message = [theChatManager sendContext:content
                                               toUser:self.viewModel.model
-                                         withMsgType:MYMessageType_CHAT_MESSAGE];
+                                         withMsgType:MYMessageType_TEXT];
     [self addChatMessage:message withUser:self.viewModel.model];
 }
 

@@ -273,9 +273,13 @@ static MYChatManager *__onetimeClass;
         ;;
     } else if (message.messageType == MYMessageType_REQUEST_HEART_BEAT) {
         NSLog(@"✉️[MYChatManager]收到心跳消息");
-    } else if (message.messageType == MYMessageType_CHAT_MESSAGE) {
+    } else if (message.messageType == MYMessageType_TEXT) {
+        if (message.fromId == TheUserManager.uid) {
+            message.sendStatus = MYMessageStatus_Success;
+        }
         for (id<MYChatManagerDelegate> delegate in self.delegateArray) {
             if ([delegate respondsToSelector:@selector(chatManager:didReceiveMessage:fromUser:)]) {
+                
                 MYUser *user = [MYUser convertFromDBModel:[theChatUserManager chatPersonWithUserId:message.fromId]];
                 [delegate chatManager:self didReceiveMessage:message fromUser:user];
             }
@@ -290,6 +294,10 @@ static MYChatManager *__onetimeClass;
     message.content = content;
     message.toId = user.userId;
     message.toEntity = MYMessageEntiteyType_USER;
+    if (message == MYMessageType_REQUEST_OFFLINE_MSGS) {
+        //TODO: wmy 获取最新的时间戳
+        [theDatabase getLastestTimestampBelongToUserId:TheUserManager.uid];
+    }
     [TheSocket sendMessage:message];
     return message;
 }

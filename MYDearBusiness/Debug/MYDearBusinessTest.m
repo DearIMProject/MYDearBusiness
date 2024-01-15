@@ -10,6 +10,7 @@
 #import <MYUtils/MYUtils.h>
 #import "MYApplicationManager.h"
 #import <MYNetwork/MYNetwork.h>
+#import <MYDearBusiness/MYDearBusiness.h>
 
 @implementation MYDearBusinessTest
 
@@ -18,7 +19,15 @@
         [MYDebugItemModel modelWithName:@"设置ip地址" block:^{
         [self showAlert];
     }],
+        [MYDebugItemModel modelWithName:@"发送获取离线消息的message" block:^{
+        [self sendGetOfflineMessage];
+    }],
     ]];
+    
+}
+
++ (void)sendGetOfflineMessage {
+    [theChatManager sendContext:TheUserManager.user.token toUser:nil withMsgType:MYMessageType_REQUEST_OFFLINE_MSGS];
 }
 
 + (void)showAlert {
