@@ -118,10 +118,6 @@
     if (!_stackView) {
         _stackView = [[UIStackView alloc] init];
         UIView *view = [[UIView alloc] init];
-#if DEBUG
-        view.layer.borderWidth = 1;
-        view.layer.borderColor = [UIColor redColor].CGColor;
-#endif
         [_stackView addArrangedSubview:view];
         [_stackView addArrangedSubview:self.retryImageView];
         [_stackView addArrangedSubview:self.progressView];
@@ -132,11 +128,11 @@
         _stackView.alignment = UIStackViewAlignmentLeading;
         [self.retryImageView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.size.mas_equalTo(CGSizeMake(20, 20));
-            make.top.mas_equalTo(7);
+//            make.top.mas_equalTo(7);
         }];
         [self.progressView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.size.mas_equalTo(CGSizeMake(20, 20));
-            make.top.mas_equalTo(7);
+//            make.top.mas_equalTo(7);
         }];
         [self.meIconImageView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.width.height.mas_equalTo(kSecondIconWidth);

@@ -23,6 +23,10 @@
 @dynamic viewModel;
 
 #pragma mark - dealloc
+
+- (void)dealloc {
+    [self.interactor unregisterTarget:self forEventName:kCanRecordMesssageTagEventName];
+}
 #pragma mark - life cycle
 
 - (instancetype)init {
@@ -63,8 +67,20 @@
     self.contentView.backgroundColor = kWhiteColor;
     self.contentLabel.textColor = kBlackColor;
     self.stackView.alignment = UIStackViewAlignmentLeading;
+    if (self.viewModel.canRecordShow) {
+        [MYLog debug:self.viewModel.content];
+    }
 }
 
+
+- (void)setInteractor:(MYInteractor *)interactor {
+    [super setInteractor:interactor];
+    [interactor registerTarget:self action:@selector(onReceiveRecordMessageTag) forEventName:kCanRecordMesssageTagEventName];
+}
+
+- (void)onReceiveRecordMessageTag {
+    self.viewModel.canRecordShow = YES;
+}
 
 #pragma mark - private methods
 #pragma mark - getters & setters & init members
@@ -93,8 +109,6 @@
         _contentLabel = [[UILabel alloc] init];
         _contentLabel.textColor = kBlackColor;
         _contentLabel.font = [UIFont systemFontOfSize:14];
-//        _contentLabel.my_edgeInsets = UIEdgeInsetsMake(5, 10, 5, 10);
-//        _contentLabel.my_lineSpace = kSpace;
         _contentLabel.clipsToBounds = YES;
         _contentLabel.numberOfLines = 0;
     }

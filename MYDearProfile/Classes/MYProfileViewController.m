@@ -17,6 +17,10 @@
 
 @implementation MYProfileViewController
 
+- (void)dealloc {
+    [self.interactor unregisterTarget:self forEventName:kProfileUploadSuccessEvent];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self initView];

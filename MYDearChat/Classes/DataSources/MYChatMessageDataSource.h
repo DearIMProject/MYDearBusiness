@@ -8,6 +8,7 @@
 #import "MYDataSource.h"
 #import "MYMessage.h"
 #import <MYDearUser/MYDearUser.h>
+#import "MYChatMessageViewModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

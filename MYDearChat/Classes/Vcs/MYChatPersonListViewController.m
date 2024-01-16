@@ -56,9 +56,8 @@
         [self.tableView.mj_header endRefreshing];
         [MBProgressHUD hideHUDForView:self.view];
         [self.tableView reloadData];
-        if (!self.dataSources.sectionModels.firstObject.viewModels.count) {
-            [MYRouter routerURL:@"changeTabAddressbook" withParameters:nil];
-        }
+        int count = self.dataSources.totalMsgCount;
+        self.tabBarItem.badgeValue = [NSString stringWithFormat:@"%d",count];
     };
     self.dataSources.failBlock = ^(NSError * _Nonnull error) {
         @strongify(self);
@@ -89,10 +88,10 @@
 
 - (void)chatManager:(MYChatManager *)manager didReceiveMessage:(MYMessage *)message fromUser:(MYUser *)user {
     // 加1
-    self.chatNumber++;
-    self.tabBarItem.badgeValue = [NSString stringWithFormat:@"%d",self.chatNumber];
+    [MYLog debug:@"[PersonList]获取到新消息"];
     [self.dataSources addMessage:message fromUser:user];
 }
+
 #pragma mark - Event Response
 #pragma mark - private methods
 #pragma mark - getters & setters & init members

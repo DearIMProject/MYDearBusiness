@@ -34,6 +34,11 @@
     return self;
 }
 
+- (void)dealloc {
+    [self.interactor unregisterTarget:self forEventName:kMessageNeedRetryEvent];
+    [self.interactor unregisterTarget:self forEventName:kMessageNeedSendEvent];
+}
+
 - (void)setInteractor:(MYInteractor *)interactor {
     [super setInteractor: interactor];
     [self.interactor registerTarget:self action:@selector(onReceiveRetry:) forEventName:kMessageNeedRetryEvent];
@@ -65,7 +70,8 @@
 }
 
 - (void)onReceiveRetry:(MYChatMessageViewModel *)viewModel {
-    viewModel.model.sendStatus = MYMessageStatus_Failure;
+    [viewModel setSendFailure];
+    //TODO: wmy
     if (self.successBlock) {
         self.successBlock();
     }

@@ -67,7 +67,7 @@
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
     if ([gestureRecognizer isKindOfClass:UITapGestureRecognizer.class]) {
-        NSLog(@"gestureRecognizer isKindOfClass:UITapGestureRecognizer.class");
+//        NSLog(@"gestureRecognizer isKindOfClass:UITapGestureRecognizer.class");
         CGPoint point = [touch locationInView:self.debugView];
         BOOL isInDebugView = CGRectContainsPoint(self.debugView.bounds, point);
         if (isInDebugView) {
@@ -75,9 +75,9 @@
         }
     }
     if ([gestureRecognizer isKindOfClass:UIPanGestureRecognizer.class]) {
-        NSLog(@"gestureRecognizer isKindOfClass:UIPanGestureRecognizer.class");
+//        NSLog(@"gestureRecognizer isKindOfClass:UIPanGestureRecognizer.class");
         CGPoint point = [gestureRecognizer locationInView:self.debugView];
-        NSLog(@"state = %d",gestureRecognizer.state);
+//        NSLog(@"state = %d",gestureRecognizer.state);
         if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
             BOOL isInDebugView = CGRectContainsPoint(self.debugView.bounds, point);
             return isInDebugView;

@@ -21,9 +21,12 @@
 
 #import <MYDearDebug/MYDearDebug.h>
 
+#import "MYAddressService.h"
+
 @interface MYApplicationManager ()
 
 @property(nonatomic, strong) MYNavigationViewController *naviController;
+@property (nonatomic, strong) MYAddressService *addressService;
 
 @end
 
@@ -50,7 +53,9 @@
 }
 
 - (void)configNotification {
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(onReceiveConnectSuccessNotification) name:CHAT_CONNECT_SUCCESS object:nil];
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(onReceiveLogoutNotification) name:LOGOUT_NOTIFICATION object:nil];
+    
 }
 
 - (void)setupDebugger {
@@ -77,11 +82,6 @@
 }
 
 - (UIViewController *)rootViewController {
-    //    #if DEBUG
-    //        ViewController *tabbar = [[ViewController alloc] init];
-    //        UINavigationController *testnavi = [[UINavigationController alloc] initWithRootViewController:tabbar];
-    //        return testnavi;
-    //    #endif
     if ([MYUserManager.shared isLogin] && !MYUserManager.shared.isExpireTime) {
         MYHomeTabbarViewController *tabBar = [[MYHomeTabbarViewController alloc] init];
         MYNavigationViewController *navi = [[MYNavigationViewController alloc] initWithRootViewController:tabBar];
@@ -106,6 +106,17 @@
 
 #pragma mark - notification
 
+- (void)onReceiveConnectSuccessNotification {
+    [MYLog debug:@"登录成功后先获取通讯录好友列表，好友列表获取成功后再去获取离线消息"];
+    [self.addressService getAllAddressListWithSuccess:^(NSArray<MYUser *> * _Nonnull users) {
+        if (users.count) {
+            [theChatManager sendContext:TheUserManager.user.token toUser:nil withMsgType:MYMessageType_REQUEST_OFFLINE_MSGS];
+        }
+    } failure:^(NSError * _Nonnull error) {
+        [MYLog debug:error.description];
+    }];
+}
+
 - (void)onReceiveLogoutNotification {
     [self refreshRootViewController];
 }
@@ -114,7 +125,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [MYApplicationNotificationManager.shared setup];
-    NSString *apiAddress = @"172.16.92.61";
+    NSString *apiAddress = @"172.16.92.60";
     theNetworkManager.host = apiAddress;
     TheSocket.host = apiAddress;
     
@@ -131,4 +142,10 @@
     return YES;
 }
 
+- (MYAddressService *)addressService {
+    if (!_addressService) {
+        _addressService = [[MYAddressService alloc] init];
+    }
+    return _addressService;
+}
 @end

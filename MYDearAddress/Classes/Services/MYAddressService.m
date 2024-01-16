@@ -47,24 +47,32 @@
     NSMutableDictionary *param = [NSMutableDictionary dictionary];
     [self.request requestApiName:@"/addressbook/all" version:@""
                            param:param success:^(NSDictionary * _Nonnull result) {
-            //TODO: wmy
-        NSArray<MYUser *> *users = [NSArray yy_modelArrayWithClass:MYUser.class json:result[@"list"]];
-        
+        NSArray<MYUser *> *requestUsers = [NSArray yy_modelArrayWithClass:MYUser.class json:result[@"list"]];
+        [self saveUsers:requestUsers withDB:users];
         if (success) {
-            success(users);
+            success(requestUsers);
         }
-        [self saveUsers:users];
         } failure:failure];
 }
 
 
-- (void)saveUsers:(NSArray<MYUser *> *)users {
-    NSMutableArray<MYDBUser *> *dbUsers = [NSMutableArray array];
+- (void)saveUsers:(NSArray<MYUser *> *)requestUsers withDB:(NSArray<MYUser *> *)users {
+    // 1. 获取users中的所有uid
+    NSMutableArray<MYUser *> *uids = [NSMutableArray array];
     for (MYUser *user in users) {
-        MYDBUser *dbUser = [MYDBUser convertFromUser:user];
-        [dbUsers addObject:dbUser];
+        [uids addObject:@(user.userId)];
     }
-    [theDatabase updateAllUser:dbUsers fromUid:TheUserManager.uid];
+    NSMutableArray<MYDBUser *> *dbUsers = [NSMutableArray array];
+    for (MYUser *user in requestUsers) {
+        if (![uids containsObject:@(user.userId)]) {
+            MYDBUser *dbUser = [MYDBUser convertFromUser:user];
+            [dbUsers addObject:dbUser];
+        }
+    }
+    if (dbUsers.count) {
+        [theDatabase updateAllUser:dbUsers fromUid:TheUserManager.uid];
+    }
+    
 }
 
 @end

@@ -12,6 +12,7 @@
 #import "MYSocketManager.h"
 #import "MYMessageFactory.h"
 #import "MYUser+MYConvert.h"
+#import "MYMessage+MYConvert.h"
 
 static int MAGIC_NUMBER = 891013;
 
@@ -250,7 +251,6 @@ static MYChatManager *__onetimeClass;
         if (content.intValue == MAGIC_NUMBER) {
             //success
             NSLog(@"✉️[MYChatManager]收到连接Login消息");
-            [self sendContext:TheUserManager.user.token toUser:nil withMsgType:MYMessageType_REQUEST_OFFLINE_MSGS];
             [NSNotificationCenter.defaultCenter postNotificationName:CHAT_CONNECT_SUCCESS object:nil];
             for (id<MYChatManagerDelegate> delegate in self.delegateArray) {
                 if ([delegate respondsToSelector:@selector(chatManagerConnectChange:)]) {
@@ -277,9 +277,16 @@ static MYChatManager *__onetimeClass;
         if (message.fromId == TheUserManager.uid) {
             message.sendStatus = MYMessageStatus_Success;
         }
-        for (id<MYChatManagerDelegate> delegate in self.delegateArray) {
+        // 添加到数据库中
+        long long mUserId = message.fromId;
+        if (mUserId == TheUserManager.uid) {
+            mUserId = message.toId;
+        }
+        MYDataMessage *dbMessage = [MYMessage convertFromMessage:message];
+        [theDatabase addChatMessage:dbMessage withUserId:mUserId belongToUserId:TheUserManager.uid];
+        
+        for (id<MYChatManagerDelegate> delegate in self.delegateArray) {    
             if ([delegate respondsToSelector:@selector(chatManager:didReceiveMessage:fromUser:)]) {
-                
                 MYUser *user = [MYUser convertFromDBModel:[theChatUserManager chatPersonWithUserId:message.fromId]];
                 [delegate chatManager:self didReceiveMessage:message fromUser:user];
             }
@@ -294,9 +301,9 @@ static MYChatManager *__onetimeClass;
     message.content = content;
     message.toId = user.userId;
     message.toEntity = MYMessageEntiteyType_USER;
-    if (message == MYMessageType_REQUEST_OFFLINE_MSGS) {
-        //TODO: wmy 获取最新的时间戳
-        [theDatabase getLastestTimestampBelongToUserId:TheUserManager.uid];
+    if (message.messageType == MYMessageType_REQUEST_OFFLINE_MSGS) {
+        // 获取最新的时间戳
+        message.timestamp = [theDatabase getLastestTimestampBelongToUserId:TheUserManager.uid];
     }
     [TheSocket sendMessage:message];
     return message;

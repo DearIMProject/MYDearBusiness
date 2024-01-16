@@ -46,6 +46,7 @@
     [self.interactor sendEventName:kClickAddressItemEventName withObjects:self.viewModel.model];
     NSMutableDictionary *dict = @{}.mutableCopy;
     dict[@"viewModel"] = self.viewModel;
+    [self.viewModel addChatPerson];
     [MYRouter routerURL:@"dearim://messagelist" withParameters:dict];
 }
 

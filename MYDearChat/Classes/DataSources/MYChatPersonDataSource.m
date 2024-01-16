@@ -22,6 +22,10 @@
 
 @implementation MYChatPersonDataSource
 
+- (void)dealloc {
+    [self.interactor unregisterTarget:self forEventName:kClickAddressItemEventName];
+}
+
 - (instancetype)init {
     if(self = [super init]) {
         _sectionModel = [[MYSectionModel alloc] init];
@@ -29,6 +33,8 @@
         _chatMap = [NSMutableDictionary dictionary];
         _chatPersonVMs = [NSMutableArray array];
         self.sectionModel.viewModels = self.chatPersonVMs;
+        
+        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(onReceiveSendMessageSuccess:) name:MESSAGE_SEND_SUCCESS_NOTIFICATION object:nil];
     }
     return self;
 }
@@ -39,29 +45,39 @@
     NSArray<MYDBUser *> *chatPersons = [theDatabase getChatListWithUserId:userId];
     for (MYDBUser *chatPerson in chatPersons) {
         MYChatPersonViewModel *vm = [[MYChatPersonViewModel alloc] init];
-        self.chatMap[@(vm.userId)] = vm;
         [vm convertFromDBModel:chatPerson];
+        self.chatMap[@(vm.userId)] = vm;
+        vm.msgContent = [theDatabase lastestContentWithUserId:vm.userId belongToUserId:TheUserManager.uid];
+        vm.messageNumber = [theDatabase getNotReadNumberWithUserId:vm.userId belongToUserId:TheUserManager.uid];
         [self.chatPersonVMs addObject:vm];
     }
-
+    
     if (self.successBlock) self.successBlock();
 }
 
+- (int)totalMsgCount {
+    return [theDatabase getNotReadNumberBelongToUserId:TheUserManager.uid];
+}
+
 - (void)addMessage:(MYMessage *)message fromUser:(MYUser *)user {
-    MYChatPersonViewModel *vm = self.chatMap[@(user.userId)];
+    long long mUserId = message.fromId;
+    if (mUserId == TheUserManager.uid) {
+        mUserId = message.toId;
+    }
+    MYChatPersonViewModel *vm = self.chatMap[@(mUserId)];
     if (!vm) {
         vm = [[MYChatPersonViewModel alloc] init];
-        [vm converFromUser:user];
+        MYDBUser *dbUser = [theDatabase getChatPersonWithUserId:mUserId];
+        [vm convertFromDBModel:dbUser];
         vm.msgContent = message.content;
         [self.chatPersonVMs insertObject:vm atIndex:0];
-        self.chatMap[@(vm.userId)] = vm;
+        self.chatMap[@(mUserId)] = vm;
     }
     if (message) {
         // 添加message到数据库中
         MYDataMessage *dbMessage = [MYMessage convertFromMessage:message];
-        [theDatabase addChatMessage:dbMessage withUserId:user.userId belongToUserId:TheUserManager.uid];
-        //TODO: wmy 这里添加一个消息，要通过消息管理中心来添加
-        vm.messageNumber++;
+        // 这里添加一个消息，要通过消息管理中心来添加
+        vm.messageNumber = [theDatabase getNotReadNumberWithUserId:mUserId belongToUserId:TheUserManager.uid];
     }
     if (self.successBlock) self.successBlock();
 }
@@ -69,6 +85,13 @@
 - (void)setInteractor:(MYInteractor *)interactor {
     [super setInteractor:interactor];
     [interactor registerTarget:self action:@selector(onReceiveAddChatPerson:) forEventName:kClickAddressItemEventName];
+}
+
+- (void)onReceiveSendMessageSuccess:(NSNotification *)notification {
+    MYDataMessage *message = notification.userInfo[@"message"];
+    MYChatPersonViewModel *vm = self.chatMap[@(message.toId)];
+    vm.msgContent = message.content;
+    if (self.successBlock) self.successBlock();
 }
 
 - (void)onReceiveAddChatPerson:(MYUser *)user {

@@ -10,12 +10,14 @@
 #import <MYClientDatabase/MYClientDatabase.h>
 #import <MYDearBusiness/MYDearBusiness.h>
 
+NSString * const kCanRecordMesssageTagEventName = @"kCanRecordMesssageTagEventName";
 
 @interface MYChatMessageViewModel ()
 
 @property(nonatomic, weak) MYDBUser *dataChatPerson;
 @property(nonatomic, assign) long fromId;/**<  消息发送方 */
 @property (nonatomic, assign) NSTimeInterval tag;
+@property (nonatomic, strong) NSString *iconURL;
 
 @end
 
@@ -37,9 +39,9 @@
     self.model = message;
     self.fromId = message.fromId;
     self.tag = message.timestamp;
-    //TODO: wmy 通过通讯录获取icon
-    self.dataChatPerson = [theChatUserManager chatPersonWithUserId:message.fromId];
+
 }
+
 
 - (MYMessageStatus)sendSuccessStatus {
     return self.model.sendStatus;
@@ -56,13 +58,22 @@
     self.model.sendStatus = MYMessageStatus_Success;
 }
 
+- (void)setSendFailure {
+    self.model.sendStatus = MYMessageStatus_Failure;
+    //TODO: wmy
+    [theDatabase messageSendFailureInMessage:[MYMessage convertFromMessage:self.model]];
+}
+
 - (NSString *)iconURL {
     //TODO: wmy 这里如果iconURL为空，直接获取数据库中的url；
-    if ([self isBelongMe]) {
-        return [theDatabase getChatPersonWithUserId:TheUserManager.uid].iconURL;
-    } else {
-        return [theDatabase getChatPersonWithUserId:self.dataChatPerson.userId].iconURL;
+    if (!_iconURL) {
+        if ([self isBelongMe]) {
+            _iconURL = [theDatabase getChatPersonWithUserId:TheUserManager.uid].iconURL;
+        } else {
+            _iconURL = [theDatabase getChatPersonWithUserId:self.model.fromId].iconURL;
+        }
     }
+    return _iconURL;
 }
 
 - (BOOL)isBelongMe {
@@ -70,6 +81,13 @@
         return YES;
     }
     return NO;
+}
+
+- (MYDBUser *)dataChatPerson {
+    if (!_dataChatPerson) {
+        _dataChatPerson =  [theChatUserManager chatPersonWithUserId:self.model.fromId];
+    }
+    return _dataChatPerson;
 }
 
 @end

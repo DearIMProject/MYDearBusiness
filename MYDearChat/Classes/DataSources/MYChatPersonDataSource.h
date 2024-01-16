@@ -17,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) MYInteractor *interactor;
 
+- (int)totalMsgCount;
+
 @end
 
 NS_ASSUME_NONNULL_END

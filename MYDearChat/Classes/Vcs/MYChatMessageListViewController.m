@@ -83,7 +83,6 @@ __MY_ROUTER_REGISTER__
 }
 
 - (void)initData {
-    
     @weakify(self);
     self.datasource.successBlock = ^{
         @strongify(self);
@@ -101,7 +100,6 @@ __MY_ROUTER_REGISTER__
 
 - (void)reloadData {
     [self.tableView reloadData];
-    
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self scrollToBottom];
     });
@@ -113,7 +111,14 @@ __MY_ROUTER_REGISTER__
     if (count > 0) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:count - 1 inSection:0];
         [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:NO];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self startRecordReadTag];
+        });
     }
+}
+
+- (void)startRecordReadTag {
+    [self.interactor sendEventName:kCanRecordMesssageTagEventName withObjects:nil];
 }
 
 

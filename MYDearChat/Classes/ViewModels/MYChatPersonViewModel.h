@@ -8,6 +8,7 @@
 #import "MYViewModel.h"
 #import <MYClientDatabase/MYClientDatabase.h>
 #import <MYDearUser/MYDearUser.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface MYChatPersonViewModel : MYViewModel

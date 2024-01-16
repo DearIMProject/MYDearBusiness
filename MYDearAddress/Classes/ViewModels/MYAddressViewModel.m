@@ -26,11 +26,11 @@
     [self converFromUser:user];
 }
 
-//- (void)addChatPerson {
-//    // 添加到数据库中
-//    MYDBUser *dbUser = [MYDBUser convertFromUser:self.model];
-//    [theDatabase setUserInChat:dbUser];
-//}
+- (void)addChatPerson {
+    // 添加到数据库中
+    MYDBUser *dbUser = [MYDBUser convertFromUser:self.model];
+    [theDatabase setUserInChat:dbUser withOwnerUserId:TheUserManager.uid];
+}
 
 - (void)converFromUser:(MYUser *)user {
     self.model = user;
