@@ -57,7 +57,11 @@
         [MBProgressHUD hideHUDForView:self.view];
         [self.tableView reloadData];
         int count = self.dataSources.totalMsgCount;
-        self.tabBarItem.badgeValue = [NSString stringWithFormat:@"%d",count];
+        if (count) {
+            self.tabBarItem.badgeValue = [NSString stringWithFormat:@"%d",count];
+        } else {
+            self.tabBarItem.badgeValue = nil;
+        }
     };
     self.dataSources.failBlock = ^(NSError * _Nonnull error) {
         @strongify(self);

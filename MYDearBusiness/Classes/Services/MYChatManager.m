@@ -273,6 +273,16 @@ static MYChatManager *__onetimeClass;
         ;;
     } else if (message.messageType == MYMessageType_REQUEST_HEART_BEAT) {
         NSLog(@"✉️[MYChatManager]收到心跳消息");
+    }else if (message.messageType == MYMessageType_READED_MESSAGE) {
+        NSTimeInterval timestamp = message.content.doubleValue;
+        // 标记为已读
+        [theDatabase setReadedMessageWithMessage:message withUserId:message.toId belongToUserId:TheUserManager.uid];
+        
+        for (id<MYChatManagerDelegate> delegate in self.delegateArray) {
+            if ([delegate respondsToSelector:@selector(chatManager:setReadedMessage:)]) {
+                [delegate chatManager:self setReadedMessage:timestamp];
+            }
+        }
     } else if (message.messageType == MYMessageType_TEXT) {
         if (message.fromId == TheUserManager.uid) {
             message.sendStatus = MYMessageStatus_Success;
@@ -285,7 +295,7 @@ static MYChatManager *__onetimeClass;
         MYDataMessage *dbMessage = [MYMessage convertFromMessage:message];
         [theDatabase addChatMessage:dbMessage withUserId:mUserId belongToUserId:TheUserManager.uid];
         
-        for (id<MYChatManagerDelegate> delegate in self.delegateArray) {    
+        for (id<MYChatManagerDelegate> delegate in self.delegateArray) {
             if ([delegate respondsToSelector:@selector(chatManager:didReceiveMessage:fromUser:)]) {
                 MYUser *user = [MYUser convertFromDBModel:[theChatUserManager chatPersonWithUserId:message.fromId]];
                 [delegate chatManager:self didReceiveMessage:message fromUser:user];

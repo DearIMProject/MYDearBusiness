@@ -22,6 +22,7 @@
 @property (nonatomic, strong) NSTimer *timer;
 
 @property (nonatomic, strong) UIImageView *retryImageView;
+@property (nonatomic, strong) UIImageView *readStatusImageView;/**< 阅读状态  */
 
 @end
 
@@ -29,6 +30,10 @@
 @dynamic viewModel;
 
 #pragma mark - dealloc
+
+- (void)dealloc {
+    [self.interactor unregisterTarget:self forEventName:kReadedMesssageTagEventName];
+}
 
 #pragma mark - life cycle
 
@@ -88,6 +93,11 @@
     }
     
     self.retryImageView.hidden = (viewModel.sendSuccessStatus != MYMessageStatus_Failure);
+    if (viewModel.readed) {
+        _readStatusImageView.tintColor = TheSkin.themeColor;
+    } else {
+        _readStatusImageView.tintColor = TheSkin.shadowColor;
+    }
 }
 
 - (void)startTimer {
@@ -106,9 +116,20 @@
 
 - (void)setMessageFailure {
     if (self.viewModel.sendSuccessStatus == MYMessageStatus_loading) {
-//        [MYLog debug:@"setMessageFailure"];
         [self.interactor sendEventName:kMessageNeedRetryEvent withObjects:self.viewModel];
     }
+}
+
+- (void)onReceiveReadedMessageWithTimestamp:(NSNumber *)timestamp {
+    if (self.viewModel.model.timestamp == timestamp.longValue) {
+        self.viewModel = self.viewModel;
+    }
+}
+
+- (void)setInteractor:(MYInteractor *)interactor {
+    [self.interactor unregisterTarget:self forEventName:kReadedMesssageTagEventName];
+    [super setInteractor:interactor];
+    [interactor registerTarget:self action:@selector(onReceiveReadedMessageWithTimestamp:) forEventName:kReadedMesssageTagEventName];
 }
 
 #pragma mark - private methods
@@ -119,6 +140,7 @@
         _stackView = [[UIStackView alloc] init];
         UIView *view = [[UIView alloc] init];
         [_stackView addArrangedSubview:view];
+        [_stackView addArrangedSubview:self.readStatusImageView];
         [_stackView addArrangedSubview:self.retryImageView];
         [_stackView addArrangedSubview:self.progressView];
         [_stackView addArrangedSubview:self.contentView];
@@ -126,17 +148,21 @@
         _stackView.axis = UILayoutConstraintAxisHorizontal;
         _stackView.spacing = kMargin * 0.5;
         _stackView.alignment = UIStackViewAlignmentLeading;
+        [self.readStatusImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.width.height.mas_equalTo(16);
+        }];
         [self.retryImageView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.size.mas_equalTo(CGSizeMake(20, 20));
-//            make.top.mas_equalTo(7);
+            make.top.mas_equalTo(7);
         }];
         [self.progressView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.size.mas_equalTo(CGSizeMake(20, 20));
-//            make.top.mas_equalTo(7);
+            make.top.mas_equalTo(7);
         }];
         [self.meIconImageView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.width.height.mas_equalTo(kSecondIconWidth);
         }];
+        
         self.meIconImageView.layer.cornerRadius = kSecondIconWidth * 0.5;
         [self.contentLabel setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisHorizontal];
         [self.contentLabel setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisHorizontal];
@@ -195,6 +221,15 @@
         _retryImageView.clipsToBounds = YES;
     }
     return _retryImageView;
+}
+
+- (UIImageView *)readStatusImageView {
+    if (!_readStatusImageView) {
+        _readStatusImageView = [[UIImageView alloc] init];
+        
+        _readStatusImageView.image = [UIImage systemImageNamed:@"checkmark.circle"];
+    }
+    return _readStatusImageView;
 }
 
 @end

@@ -41,7 +41,7 @@
     message.messageType = msgType;
     message.fromId = TheUserManager.user.userId;
     message.fromEntity = MYMessageEntiteyType_USER;
-    message.timestamp = [[NSDate alloc] init].timeIntervalSince1970;
+    message.timestamp = [[NSDate alloc] init].timeIntervalSince1970 * 1000;
     return message;
 }
 @end

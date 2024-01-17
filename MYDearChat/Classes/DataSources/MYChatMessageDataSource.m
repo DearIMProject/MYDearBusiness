@@ -13,7 +13,7 @@
 
 #import "MYChatPersonViewModel.h"
 
-@interface MYChatMessageDataSource ()
+@interface MYChatMessageDataSource () <MYChatManagerDelegate>
 
 @property (nonatomic, strong) MYSectionModel *sectionModel;
 @property (nonatomic, strong) NSMutableArray<MYChatMessageViewModel *> *vms;
@@ -21,6 +21,12 @@
 @end
 
 @implementation MYChatMessageDataSource
+
+- (void)dealloc {
+    [theChatManager removeChatDelegate:self];
+    [self.interactor unregisterTarget:self forEventName:kMessageNeedRetryEvent];
+    [self.interactor unregisterTarget:self forEventName:kMessageNeedSendEvent];
+}
 
 - (instancetype)init
 {
@@ -30,13 +36,9 @@
         self.sectionModels = @[self.sectionModel];
         _vms = [NSMutableArray array];
         self.sectionModel.viewModels = self.vms;
+        [theChatManager addChatDelegate:self];
     }
     return self;
-}
-
-- (void)dealloc {
-    [self.interactor unregisterTarget:self forEventName:kMessageNeedRetryEvent];
-    [self.interactor unregisterTarget:self forEventName:kMessageNeedSendEvent];
 }
 
 - (void)setInteractor:(MYInteractor *)interactor {
@@ -106,4 +108,8 @@
     }
 }
 
-@end
+- (void)chatManager:(MYChatManager *)manager setReadedMessage:(NSTimeInterval)timestamp {
+    [self.interactor sendEventName:kReadedMesssageTagEventName withObjects:@(timestamp)];
+}
+
+@end 

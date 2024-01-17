@@ -12,8 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MYMessage (MYConvert)
 
-+ (MYDataMessage *)convertFromMessage:(MYMessage *)message;
-
++ (MYMessage *)convertFromMessage:(MYDataMessage *)message;
++ (MYDataMessage *)dbConvertFromMessage:(MYMessage *)message;
 @end
 
 NS_ASSUME_NONNULL_END

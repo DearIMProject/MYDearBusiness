@@ -11,10 +11,11 @@
 #import <MYDearBusiness/MYDearBusiness.h>
 
 NSString * const kCanRecordMesssageTagEventName = @"kCanRecordMesssageTagEventName";
-
+NSString * const kReadedMesssageTagEventName = @"kReadedMesssageTagEventName";
 @interface MYChatMessageViewModel ()
 
 @property(nonatomic, weak) MYDBUser *dataChatPerson;
+@property(nonatomic, weak) MYDataMessage *dbMessage;
 @property(nonatomic, assign) long fromId;/**<  消息发送方 */
 @property (nonatomic, assign) NSTimeInterval tag;
 @property (nonatomic, strong) NSString *iconURL;
@@ -31,6 +32,7 @@ NSString * const kCanRecordMesssageTagEventName = @"kCanRecordMesssageTagEventNa
 }
 
 - (void)convertWithDataModel:(MYDataMessage *)dbModel {
+    _dbMessage = dbModel;
     MYMessage *message = [MYMessage convertFromMessage:dbModel];
     [self convertWithMessage:message];
 }
@@ -39,9 +41,13 @@ NSString * const kCanRecordMesssageTagEventName = @"kCanRecordMesssageTagEventNa
     self.model = message;
     self.fromId = message.fromId;
     self.tag = message.timestamp;
-
 }
 
+- (BOOL)readed {
+    self.model.readList = [self.dbMessage.readList componentsSeparatedByString:@","];
+    BOOL readed = [self.model.readList containsObject:[NSString stringWithFormat:@"%lld",self.model.toId]];
+    return readed;
+}
 
 - (MYMessageStatus)sendSuccessStatus {
     return self.model.sendStatus;

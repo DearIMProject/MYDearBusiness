@@ -59,6 +59,8 @@ typedef enum : NSUInteger {
 /// - Parameter connect: 是否连接
 - (void)chatManagerConnectChange:(MYChatManagerConnectStatus)connectStatus;
 
+- (void)chatManager:(MYChatManager *)manager setReadedMessage:(NSTimeInterval)timestamp;
+
 @end
 
 

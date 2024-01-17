@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 #define kMessageNeedSendEvent @"kMessageNeedSendEvent"// 消息重发
 
 FOUNDATION_EXPORT NSString * const kCanRecordMesssageTagEventName;
+FOUNDATION_EXPORT NSString * const kReadedMesssageTagEventName;
 
 @interface MYChatMessageViewModel : MYViewModel
 
@@ -26,6 +27,11 @@ FOUNDATION_EXPORT NSString * const kCanRecordMesssageTagEventName;
 @property (nonatomic, assign, readonly) MYMessageStatus sendSuccessStatus;
 
 @property (nonatomic, assign) BOOL canRecordShow;/**< 是否展示  */
+
+@property (nonatomic, assign,readonly) BOOL readed;/**< 是否已读  */ 
+
+- (MYDBUser *)dataChatPerson;
+
 
 /**
  * 用户图片

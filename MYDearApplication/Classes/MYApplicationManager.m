@@ -110,6 +110,7 @@
     [MYLog debug:@"登录成功后先获取通讯录好友列表，好友列表获取成功后再去获取离线消息"];
     [self.addressService getAllAddressListWithSuccess:^(NSArray<MYUser *> * _Nonnull users) {
         if (users.count) {
+            NSLog(@"✉️发送离线消息");
             [theChatManager sendContext:TheUserManager.user.token toUser:nil withMsgType:MYMessageType_REQUEST_OFFLINE_MSGS];
         }
     } failure:^(NSError * _Nonnull error) {

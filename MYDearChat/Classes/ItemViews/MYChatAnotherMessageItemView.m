@@ -7,8 +7,10 @@
 
 #import "MYChatAnotherMessageItemView.h"
 #import <MYUIKit/MYUIKit.h>
+#import <MYDearBusiness/MYDearBusiness.h>
 #import <SDWebImage/SDWebImage.h>
 #import "MYChatMessageViewModel.h"
+
 @interface MYChatAnotherMessageItemView ()
 
 @property(nonatomic, strong) UILabel *contentLabel;/**< 内容  */
@@ -69,6 +71,8 @@
     self.stackView.alignment = UIStackViewAlignmentLeading;
     if (self.viewModel.canRecordShow) {
         [MYLog debug:self.viewModel.content];
+        //TODO: wmy 这里做已读消息
+        [theChatManager sendContext:nil toUser:viewModel.dataChatPerson withMsgType:MYMessageType_READED_MESSAGE];
     }
 }
 
@@ -79,6 +83,7 @@
 }
 
 - (void)onReceiveRecordMessageTag {
+    [MYLog debug:@"onReceiveRecordMessageTag"];
     self.viewModel.canRecordShow = YES;
 }
 
