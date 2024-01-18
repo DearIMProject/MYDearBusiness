@@ -7,6 +7,7 @@
 
 #import "MYChatManager.h"
 #import <Reachability/Reachability.h>
+#import <YYModel/YYModel.h>
 #import <MYUtils/MYUtils.h>
 #import "MYUserManager.h"
 #import "MYSocketManager.h"
@@ -209,6 +210,7 @@ static MYChatManager *__onetimeClass;
 #pragma mark - MYSocketManagerDelegate
 
 - (void)didConnectSuccess:(MYSocketManager *)manager {
+    self.isRetry = NO;
     [self resetRetryCount];
     // 发送登录信息
     MYMessage *message = [MYMessageFactory messageWithMesssageType:MYMessageType_REQUEST_LOGIN];
@@ -245,7 +247,7 @@ static MYChatManager *__onetimeClass;
 }
 
 - (void)didReceiveOnManager:(MYSocketManager *)manager message:(MYMessage *)message {
-    
+    if (!message) return;
     if (message.messageType == MYMessageType_REQUEST_LOGIN) {
         NSString *content = message.content;
         if (content.intValue == MAGIC_NUMBER) {
@@ -264,20 +266,30 @@ static MYChatManager *__onetimeClass;
         }
     } else if (message.messageType == MYMessageType_SEND_SUCCESS_MESSAGE) {
         NSTimeInterval tag = message.content.doubleValue;
-        for (id<MYChatManagerDelegate> delegate in self.delegateArray) {
-            if ([delegate respondsToSelector:@selector(chatManager:sendMessageSuccessWithTag:messageId:)]) {
-                [delegate chatManager:self sendMessageSuccessWithTag:tag messageId:message.msgId];
+        NSDictionary *dict = [message.content jsonByError:nil];
+        MYSuccessContentJsonModel *jsonModel = [MYSuccessContentJsonModel yy_modelWithJSON:dict];
+        // 发送文本消息返回
+        if (jsonModel.messageType == MYMessageType_TEXT) {
+            for (id<MYChatManagerDelegate> delegate in self.delegateArray) {
+                if ([delegate respondsToSelector:@selector(chatManager:sendMessageSuccessWithTag:messageId:)]) {
+                    [delegate chatManager:self sendMessageSuccessWithTag:jsonModel.timestamp messageId:message.msgId];
+                }
             }
         }
+        // 已读返回
+        if (jsonModel.messageType == MYMessageType_READED_MESSAGE) {
+         // 将对方的消息转为已读
+            [theDatabase messageWithTimestamp:jsonModel.timestamp userId:message.toId belongToUserId:TheUserManager.uid];
+        }
+        
     } else if (message.messageType == MYMessageType_REQUEST_OFFLINE_MSGS) {
         ;;
     } else if (message.messageType == MYMessageType_REQUEST_HEART_BEAT) {
         NSLog(@"✉️[MYChatManager]收到心跳消息");
     }else if (message.messageType == MYMessageType_READED_MESSAGE) {
-        NSTimeInterval timestamp = message.content.doubleValue;
+        NSTimeInterval timestamp = message.content.longLongValue;
         // 标记为已读
         [theDatabase setReadedMessageWithMessage:message withUserId:message.toId belongToUserId:TheUserManager.uid];
-        
         for (id<MYChatManagerDelegate> delegate in self.delegateArray) {
             if ([delegate respondsToSelector:@selector(chatManager:setReadedMessage:)]) {
                 [delegate chatManager:self setReadedMessage:timestamp];

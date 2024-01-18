@@ -69,10 +69,12 @@
     self.contentView.backgroundColor = kWhiteColor;
     self.contentLabel.textColor = kBlackColor;
     self.stackView.alignment = UIStackViewAlignmentLeading;
-    if (self.viewModel.canRecordShow) {
+    if (self.viewModel.canRecordShow && !self.viewModel.readed) {
+        //TODO: wmy 这里还有需要判断是否之前就已经已读了
         [MYLog debug:self.viewModel.content];
-        //TODO: wmy 这里做已读消息
-        [theChatManager sendContext:nil toUser:viewModel.dataChatPerson withMsgType:MYMessageType_READED_MESSAGE];
+        // 这里做已读消息
+        [theChatManager sendContext:[NSString stringWithFormat:@"%lld",self.viewModel.model.timestamp]
+                             toUser:viewModel.dataChatPerson withMsgType:MYMessageType_READED_MESSAGE];
     }
 }
 
@@ -83,7 +85,6 @@
 }
 
 - (void)onReceiveRecordMessageTag {
-    [MYLog debug:@"onReceiveRecordMessageTag"];
     self.viewModel.canRecordShow = YES;
 }
 
