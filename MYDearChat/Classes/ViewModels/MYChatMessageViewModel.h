@@ -30,6 +30,8 @@ FOUNDATION_EXPORT NSString * const kReadedMesssageTagEventName;
 
 @property (nonatomic, assign,readonly) BOOL readed;/**< 是否已读  */ 
 
+@property (nonatomic, assign) BOOL hasSendReadedMessage;/**< 是否已发送已读消息  */ 
+
 - (MYDBUser *)dataChatPerson;
 
 

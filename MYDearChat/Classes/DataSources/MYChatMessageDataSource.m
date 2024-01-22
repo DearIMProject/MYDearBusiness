@@ -48,7 +48,7 @@
 }
 
 - (void)request {
-    NSArray<MYDataMessage *> *dataMessages = [theDatabase getChatMessageWithPerson:self.viewModel.userId belongToUserId:TheUserManager.uid];
+    NSArray<MYDataMessage *> *dataMessages = [theDatabase getChatMessageWithPerson:self.viewModel.userId];
     for (MYDataMessage *dataMessage in dataMessages) {
         MYChatMessageViewModel *vm = [[MYChatMessageViewModel alloc] init];
         [vm convertWithDataModel:dataMessage];
@@ -82,7 +82,7 @@
 - (void)addChatMessage:(MYMessage *)message withUser:(MYUser *)user {
     // message添加到数据库中
     MYDataMessage *dbMessage = [MYMessage convertFromMessage:message];
-    [theDatabase addChatMessage:dbMessage withUserId:user.userId belongToUserId:TheUserManager.uid];
+    [theDatabase addChatMessage:dbMessage withUserId:user.userId];
     // ui交互
     MYChatMessageViewModel *vm = [[MYChatMessageViewModel alloc] init];
     [vm convertWithDataModel:dbMessage];

@@ -47,6 +47,10 @@
     self.tableViewDelegate.interactor = self.interactor;
     self.dataSources.interactor = self.interactor;
     
+//    [NSNotificationCenter.defaultCenter addObserver:self
+//                                           selector:@selector(onReceiveChatPersonChange)
+//                                               name:CHAT_PERSON_CHANGE object:nil];
+    
     [theChatManager addChatDelegate:self];
     
     @weakify(self);
@@ -87,7 +91,12 @@
     }];
 }
 
-#pragma mark - UITableViewDelegate
+#pragma mark - notification
+
+//- (void)onReceiveChatPersonChange {
+//    [self.dataSources request];
+//}
+
 #pragma mark - MYChatManagerDelegate
 
 - (void)chatManager:(MYChatManager *)manager didReceiveMessage:(MYMessage *)message fromUser:(MYUser *)user {

@@ -243,7 +243,7 @@ static MYChatManager *__onetimeClass;
     //        if ([delegate respondsToSelector:@selector(chatManager:sendMessageSuccessWithTag:)]) {
     //            [delegate chatManager:self sendMessageSuccessWithTag:tag];
     //        }
-    //    }
+    //    }  g
 }
 
 - (void)didReceiveOnManager:(MYSocketManager *)manager message:(MYMessage *)message {
@@ -265,21 +265,25 @@ static MYChatManager *__onetimeClass;
             [NSNotificationCenter.defaultCenter postNotificationName:CHAT_CONNECT_FAILURE object:nil];
         }
     } else if (message.messageType == MYMessageType_SEND_SUCCESS_MESSAGE) {
-        NSTimeInterval tag = message.content.doubleValue;
+        
         NSDictionary *dict = [message.content jsonByError:nil];
         MYSuccessContentJsonModel *jsonModel = [MYSuccessContentJsonModel yy_modelWithJSON:dict];
-        // 发送文本消息返回
-        if (jsonModel.messageType == MYMessageType_TEXT) {
-            for (id<MYChatManagerDelegate> delegate in self.delegateArray) {
-                if ([delegate respondsToSelector:@selector(chatManager:sendMessageSuccessWithTag:messageId:)]) {
-                    [delegate chatManager:self sendMessageSuccessWithTag:jsonModel.timestamp messageId:message.msgId];
-                }
-            }
-        }
+        NSTimeInterval timestamp = jsonModel.content.doubleValue;
         // 已读返回
         if (jsonModel.messageType == MYMessageType_READED_MESSAGE) {
-         // 将对方的消息转为已读
-            [theDatabase messageWithTimestamp:jsonModel.timestamp userId:message.toId belongToUserId:TheUserManager.uid];
+            // 将对方的消息转为已读
+            long long mUserId = message.fromId;
+            if (mUserId == TheUserManager.uid) {
+                mUserId = message.toId;
+            }
+            [theDatabase setReadedWithTimestamp:timestamp
+                                         userId:mUserId];
+            
+        }
+        for (id<MYChatManagerDelegate> delegate in self.delegateArray) {
+            if ([delegate respondsToSelector:@selector(chatManager:sendMessageSuccessWithTag:messageId:)]) {
+                [delegate chatManager:self sendMessageSuccessWithTag:timestamp messageId:message.msgId];
+            }
         }
         
     } else if (message.messageType == MYMessageType_REQUEST_OFFLINE_MSGS) {
@@ -289,7 +293,11 @@ static MYChatManager *__onetimeClass;
     }else if (message.messageType == MYMessageType_READED_MESSAGE) {
         NSTimeInterval timestamp = message.content.longLongValue;
         // 标记为已读
-        [theDatabase setReadedMessageWithMessage:message withUserId:message.toId belongToUserId:TheUserManager.uid];
+        long long mUserId = message.fromId;
+        if (mUserId == TheUserManager.uid) {
+            mUserId = message.toId;
+        }
+        [theDatabase setReadedMessageWithMessage:message withUserId:mUserId];
         for (id<MYChatManagerDelegate> delegate in self.delegateArray) {
             if ([delegate respondsToSelector:@selector(chatManager:setReadedMessage:)]) {
                 [delegate chatManager:self setReadedMessage:timestamp];
@@ -305,7 +313,7 @@ static MYChatManager *__onetimeClass;
             mUserId = message.toId;
         }
         MYDataMessage *dbMessage = [MYMessage convertFromMessage:message];
-        [theDatabase addChatMessage:dbMessage withUserId:mUserId belongToUserId:TheUserManager.uid];
+        [theDatabase addChatMessage:dbMessage withUserId:mUserId ];
         
         for (id<MYChatManagerDelegate> delegate in self.delegateArray) {
             if ([delegate respondsToSelector:@selector(chatManager:didReceiveMessage:fromUser:)]) {
@@ -325,7 +333,7 @@ static MYChatManager *__onetimeClass;
     message.toEntity = MYMessageEntiteyType_USER;
     if (message.messageType == MYMessageType_REQUEST_OFFLINE_MSGS) {
         // 获取最新的时间戳
-        message.timestamp = [theDatabase getLastestTimestampBelongToUserId:TheUserManager.uid];
+        message.timestamp = [theDatabase getLastestTimestamp];
     }
     [TheSocket sendMessage:message];
     return message;

@@ -43,6 +43,10 @@ NSString * const kReadedMesssageTagEventName = @"kReadedMesssageTagEventName";
     self.tag = message.timestamp;
 }
 
+- (NSTimeInterval)tag {
+    return self.dbMessage.timestamp;
+}
+
 - (BOOL)readed {
     self.model.readList = [self.dbMessage.readList componentsSeparatedByString:@","];
     BOOL readed = [self.model.readList containsObject:[NSString stringWithFormat:@"%lld",self.model.toId]];
@@ -60,7 +64,7 @@ NSString * const kReadedMesssageTagEventName = @"kReadedMesssageTagEventName";
 - (void)setMsgSendSuccessWithUserId:(long long)userId {
     // 调用dataclient进行
     [MYLog debug:@"收到消息推送成功消息"];
-    BOOL isSuccess = [theDatabase sendSuccessWithTimer:self.model.timestamp messageId:self.model.msgId withUserId:userId belongToUserId:TheUserManager.uid];
+    BOOL isSuccess = [theDatabase sendSuccessWithTimer:self.model.timestamp messageId:self.model.msgId withUserId:userId];
     self.model.sendStatus = MYMessageStatus_Success;
 }
 
@@ -91,7 +95,11 @@ NSString * const kReadedMesssageTagEventName = @"kReadedMesssageTagEventName";
 
 - (MYDBUser *)dataChatPerson {
     if (!_dataChatPerson) {
-        _dataChatPerson =  [theChatUserManager chatPersonWithUserId:self.model.fromId];
+        long long userId = self.model.fromId;
+        if (userId == TheUserManager.uid) {
+            userId = self.model.toId;
+        }
+        _dataChatPerson =  [theChatUserManager chatPersonWithUserId:userId];
     }
     return _dataChatPerson;
 }

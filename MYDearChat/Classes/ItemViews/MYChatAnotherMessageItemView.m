@@ -69,20 +69,21 @@
     self.contentView.backgroundColor = kWhiteColor;
     self.contentLabel.textColor = kBlackColor;
     self.stackView.alignment = UIStackViewAlignmentLeading;
-    if (self.viewModel.canRecordShow && !self.viewModel.readed) {
+    if (!self.viewModel.readed  && !self.viewModel.hasSendReadedMessage) {
         //TODO: wmy 这里还有需要判断是否之前就已经已读了
         [MYLog debug:self.viewModel.content];
         // 这里做已读消息
         [theChatManager sendContext:[NSString stringWithFormat:@"%lld",self.viewModel.model.timestamp]
                              toUser:viewModel.dataChatPerson withMsgType:MYMessageType_READED_MESSAGE];
+        self.viewModel.hasSendReadedMessage = YES;
     }
 }
 
-
-- (void)setInteractor:(MYInteractor *)interactor {
-    [super setInteractor:interactor];
-    [interactor registerTarget:self action:@selector(onReceiveRecordMessageTag) forEventName:kCanRecordMesssageTagEventName];
-}
+//
+//- (void)setInteractor:(MYInteractor *)interactor {
+//    [super setInteractor:interactor];
+//    [interactor registerTarget:self action:@selector(onReceiveRecordMessageTag) forEventName:kCanRecordMesssageTagEventName];
+//}
 
 - (void)onReceiveRecordMessageTag {
     self.viewModel.canRecordShow = YES;

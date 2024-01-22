@@ -20,6 +20,7 @@
 #import "MYApplicationNotificationManager.h"
 
 #import <MYDearDebug/MYDearDebug.h>
+#import <MYClientDatabase/MYClientDatabase.h>
 
 #import "MYAddressService.h"
 
@@ -55,6 +56,8 @@
 - (void)configNotification {
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(onReceiveConnectSuccessNotification) name:CHAT_CONNECT_SUCCESS object:nil];
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(onReceiveLogoutNotification) name:LOGOUT_NOTIFICATION object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(onReceiveLoginNotification) name:LOGIN_SUCCESS_NOTIFICATION object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(onReceiveLoginNotification) name:AUTO_LOGIN_SUCCESS_NOTIFICATION object:nil];
     
 }
 
@@ -119,14 +122,19 @@
 }
 
 - (void)onReceiveLogoutNotification {
+    [theDatabase resetCaches];
     [self refreshRootViewController];
+}
+
+- (void)onReceiveLoginNotification {
+    [theDatabase setupWithUid:TheUserManager.uid];
 }
 
 #pragma mark - appdelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [MYApplicationNotificationManager.shared setup];
-    NSString *apiAddress = @"172.16.92.60";
+    NSString *apiAddress = @"172.16.92.69";
     theNetworkManager.host = apiAddress;
     TheSocket.host = apiAddress;
     

@@ -47,8 +47,8 @@
         MYChatPersonViewModel *vm = [[MYChatPersonViewModel alloc] init];
         [vm convertFromDBModel:chatPerson];
         self.chatMap[@(vm.userId)] = vm;
-        vm.msgContent = [theDatabase lastestContentWithUserId:vm.userId belongToUserId:TheUserManager.uid];
-        vm.messageNumber = [theDatabase getNotReadNumberWithUserId:vm.userId belongToUserId:TheUserManager.uid];
+        vm.msgContent = [theDatabase lastestContentWithUserId:vm.userId];
+        vm.messageNumber = [theDatabase getNotReadNumberWithUserId:vm.userId];
         [self.chatPersonVMs addObject:vm];
     }
     
@@ -56,7 +56,7 @@
 }
 
 - (int)totalMsgCount {
-    return [theDatabase getNotReadNumberBelongToUserId:TheUserManager.uid];
+    return [theDatabase getNotReadNumbers];
 }
 
 - (void)addMessage:(MYMessage *)message fromUser:(MYUser *)user {
@@ -77,7 +77,7 @@
         // 添加message到数据库中
         MYDataMessage *dbMessage = [MYMessage convertFromMessage:message];
         // 这里添加一个消息，要通过消息管理中心来添加
-        vm.messageNumber = [theDatabase getNotReadNumberWithUserId:mUserId belongToUserId:TheUserManager.uid];
+        vm.messageNumber = [theDatabase getNotReadNumberWithUserId:mUserId];
     }
     if (self.successBlock) self.successBlock();
 }
@@ -98,7 +98,7 @@
     MYChatPersonViewModel *vm = self.chatMap[@(user.userId)];
     if (!vm) {
         MYDBUser *dbUser = [MYDBUser convertFromUser:user];
-        [theDatabase setUserInChat:dbUser withOwnerUserId:TheUserManager.uid];
+        [theDatabase setUserInChat:dbUser];
     }
     
     [self addMessage:nil fromUser:user];
